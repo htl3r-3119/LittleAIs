@@ -2,6 +2,8 @@ package net.little.ais;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.little.ais.itemgroups.ModItemGroups;
+import net.little.ais.items.ModItems;
 import net.minecraft.resources.Identifier;
 
 import org.slf4j.Logger;
@@ -22,6 +24,9 @@ public class LittleAIs implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Initializing LittleAIs");
+
+		ModItems.initialize();
+		ModItemGroups.initialize();
 	}
 
 	public static Identifier id(String path) {
