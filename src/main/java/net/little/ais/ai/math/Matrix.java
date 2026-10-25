@@ -37,6 +37,29 @@ public class Matrix {
         return this;
     }
 
+    @Override
+    public Matrix clone() {
+        Matrix m = new Matrix(this.r, this.c);
+        m.fill(this.vals);
+        return m;
+    }
+
+    public Matrix add(Matrix other) {
+        return this.clone().iterateSelf(Functions::ADD, other);
+    }
+
+    public Matrix sub(Matrix other) {
+        return this.clone().iterateSelf(Functions::SUB, other);
+    }
+
+    public Matrix mul(Matrix other) {
+        return this.clone().iterateSelf(Functions::MUL, other);
+    }
+
+    public Matrix div(Matrix other) {
+        return this.clone().iterateSelf(Functions::DIV, other);
+    }
+
     public Matrix iterateSelf(BiFunction<Double, Double, Double> func, Matrix other) {
         if (!this.fitForSimpleOp(other)) {
             throw new RuntimeException("The dimensions don't fit");
@@ -47,68 +70,31 @@ public class Matrix {
         return this;
     }
 
-    public Matrix iterateTo(Function<Double, Double> func, Matrix to) {
-        if (!this.fitForSimpleOp(to)) {
-            throw new RuntimeException("The dimensions don't fit");
-        }
-        for (int idx = 0; idx < this.vals.length; idx++) {
-            to.vals[idx] = func.apply(this.vals[idx]);
-        }
-        return to;
-    }
-
-    public Matrix iterateTo(BiFunction<Double, Double, Double> func, Matrix other, Matrix to) {
-        if (!(this.fitForSimpleOp(other) || this.fitForSimpleOp(to))) {
-            throw new RuntimeException("The dimensions don't fit");
-        }
-        for (int idx = 0; idx < this.vals.length; idx++) {
-            to.vals[idx] = func.apply(this.vals[idx], other.vals[idx]);
-        }
-        return to;
-    }
-
-    public Matrix matmul(Matrix other, Matrix out) {
-        if (!this.fitForMatMul(other) || this.r != out.r || other.c != out.c) {
+    public Matrix matmul(Matrix other) {
+        if (!this.fitForMatMul(other)) {
             throw new RuntimeException("Dimensions don't fit matrix multiplication");
         }
+        Matrix m = new Matrix(this.c, other.r);
         for (int i = 0; i < this.r; i++) {
             for (int j = 0; j < other.c; j++) {
                 double sum = 0;
                 for (int k = 0; k < this.c; k++) {
                     sum += this.get(i,k) * other.get(k,j);
                 }
-                out.set(i,j,sum);
+                m.set(i,j,sum);
             }
         }
-        return out;
+        return m;
     }
 
-    public Matrix transposeSelf() {
-        double[] arr = new double[this.vals.length];
+    public Matrix transpose() {
+        Matrix m = new Matrix(this.c, this.r);
         for (int r = 0; r < this.r; r++) {
             for (int c = 0; c < this.c; c++) {
-                int idxA = r*this.c+c;
-                int idxB = c*this.r+r;
-                arr[idxB] = this.vals[idxA];
+                m.set(c,r,this.get(r,c));
             }
         }
-        this.c ^= this.r;
-        this.r ^= this.c;
-        this.c ^= this.r;
-        System.arraycopy(arr, 0, this.vals, 0, this.vals.length);
-        return this;
-    }
-
-    public Matrix transposeTo(Matrix dest) {
-        if (this.vals.length != dest.vals.length) {
-            throw new RuntimeException("Dimensions don't fit");
-        }
-        for (int r = 0; r < this.r; r++) {
-            for (int c = 0; c < this.c; c++) {
-                dest.set(c,r, this.get(r,c));
-            }
-        }
-        return dest;
+        return m;
     }
 
     public void fill(double... vals) {
