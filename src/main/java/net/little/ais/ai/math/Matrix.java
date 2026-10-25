@@ -62,7 +62,7 @@ public class Matrix {
 
     public Matrix iterateSelf(BiFunction<Double, Double, Double> func, Matrix other) {
         if (!this.fitForSimpleOp(other)) {
-            throw new RuntimeException("The dimensions don't fit");
+            throw new RuntimeException(String.format("The dimensions don't fit (%d, %d) | (%d, %d)", this.r, this.c, other.r, other.c));
         }
         for (int idx = 0; idx < this.vals.length; idx++) {
             this.vals[idx] = func.apply(this.vals[idx], other.vals[idx]);
@@ -74,7 +74,7 @@ public class Matrix {
         if (!this.fitForMatMul(other)) {
             throw new RuntimeException("Dimensions don't fit matrix multiplication");
         }
-        Matrix m = new Matrix(this.c, other.r);
+        Matrix m = new Matrix(this.r, other.c);
         for (int i = 0; i < this.r; i++) {
             for (int j = 0; j < other.c; j++) {
                 double sum = 0;
@@ -114,5 +114,11 @@ public class Matrix {
         }
         strB.append("}");
         return strB.toString();
+    }
+
+    public static Matrix onesLike(int r, int c) {
+        Matrix m = new Matrix(r,c);
+        m.iterateSelf(_ -> 1.);
+        return m;
     }
 }

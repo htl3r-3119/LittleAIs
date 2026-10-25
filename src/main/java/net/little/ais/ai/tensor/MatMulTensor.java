@@ -21,6 +21,7 @@ public class MatMulTensor extends Tensor {
         # y
         y(b,c) = (b,a) x (a,c)
         */
-
+        this.PARENTS[0].backward(grad.matmul(this.PARENTS[1].MATRIX.transpose()));
+        this.PARENTS[1].backward(this.PARENTS[0].MATRIX.transpose().matmul(grad));
     }
 }

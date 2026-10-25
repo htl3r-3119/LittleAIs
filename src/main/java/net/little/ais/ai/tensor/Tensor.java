@@ -45,4 +45,9 @@ public class Tensor {
     public void zeroGrad() {
         this.GRAD.iterateSelf(_ -> 0.);
     }
+
+    @Override
+    public String toString() {
+        return this.MATRIX.toString();
+    }
 }

@@ -12,7 +12,9 @@ public class Linear implements Layer {
 
     public Linear(int i, int o) {
         this.W = new Tensor(new Matrix(i,o));
+        this.W.MATRIX.iterateSelf(_ -> (Math.random()-0.5)*0.1);
         this.B = new Tensor(new Matrix(1,o));
+        this.B.MATRIX.iterateSelf(_ -> (Math.random()-0.5)*0.1);
     }
 
     @Override

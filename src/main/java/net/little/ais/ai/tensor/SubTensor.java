@@ -12,7 +12,7 @@ public class SubTensor extends Tensor {
     @Override
     public void backward(Matrix grad) {
         this.push(grad);
-        this.PARENTS[0].backward(grad.iterateSelf(aDouble -> aDouble*-1));
-        this.PARENTS[1].backward(grad);
+        this.PARENTS[0].backward(grad);
+        this.PARENTS[1].backward(grad.clone().iterateSelf(x -> x*-1));
     }
 }
