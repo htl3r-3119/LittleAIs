@@ -1,31 +1,31 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "little_ais",
 	"version": "${version}",
-	"name": "Example Mod",
+	"name": "Little AIs",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
-		"Me!"
+		"Arget_Istalri"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"icon": "assets/little/ais/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"net.little.ais.LittleAIs"
 		],
 		"client": [
-			"com.example.client.ExampleModClient"
+			"net.little.ais.client.LittleAIsClient"
 		]
 	},
 	"mixins": [
-		"modid.mixins.json",
+		"little.ais.mixins.json",
 		{
-			"config": "modid.client.mixins.json",
+			"config": "little.ais.client.mixins.json",
 			"environment": "client"
 		}
 	],
