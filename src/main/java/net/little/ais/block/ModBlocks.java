@@ -9,11 +9,19 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComparatorBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import java.util.function.Function;
 
 public class ModBlocks {
+
+    public static final Block REDSTONE_FUNCTION_CONVERTER_BLOCK = register(
+            create("redstone_function_converter"),
+            RedstoneFunctionConverterBlock::new,
+            BlockBehaviour.Properties.of().isRedstoneConductor(Blocks::never)
+    );
 
     public static void initialize() {
         LittleAIs.LOGGER.info("Initializing Blocks");

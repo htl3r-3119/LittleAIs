@@ -2,6 +2,7 @@ package net.little.ais.itemgroups;
 
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.little.ais.LittleAIs;
+import net.little.ais.block.ModBlocks;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -25,6 +26,7 @@ public class ModItemGroups {
             .displayItems((parameters, output) -> {
                 output.accept(Items.COMPARATOR);
                 output.accept(Items.REPEATER);
+                output.accept(ModBlocks.REDSTONE_FUNCTION_CONVERTER_BLOCK.asItem());
             })
             .build();
 
