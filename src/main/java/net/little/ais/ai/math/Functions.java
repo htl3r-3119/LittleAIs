@@ -15,4 +15,18 @@ public final class Functions {
     public static double RELUD(double x) { return x > 0 ? 1. : 0.; }
     public static double TANHD(double y) { return 1. - y*y; }
 
+    private static BatchMatrix softmaxBatch(BatchMatrix m) {
+        return m.iterMatrixSelf(Functions::softmaxMatrix);
+    }
+
+    private static Matrix softmaxMatrix(Matrix m) {
+        double max = m.max();
+        double sum = m.iterateSelf(x -> Math.exp(x - max)).sum();
+        return m.iterateSelf(x -> x/sum);
+    }
+
+    public static Matrix softmax(Matrix m) {
+        return m instanceof BatchMatrix bm ? softmaxBatch(bm) : softmaxMatrix(m);
+    }
+
 }

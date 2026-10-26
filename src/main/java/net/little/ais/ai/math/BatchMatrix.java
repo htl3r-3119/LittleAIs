@@ -1,6 +1,9 @@
 package net.little.ais.ai.math;
 
+import com.mojang.datafixers.types.Func;
+
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class BatchMatrix extends Matrix {
 
@@ -134,5 +137,29 @@ public class BatchMatrix extends Matrix {
         }
         strB.append("}");
         return strB.toString();
+    }
+
+    public BatchMatrix iterMatrixSelf(Function<Matrix, Matrix> iter) {
+        Matrix m = new Matrix(this.r, this.c);
+        for (int i = 0; i < this.b; i++) {
+            int idx = i * this.r * this.c;
+            System.arraycopy(this.vals, idx, m.vals, 0, m.vals.length);
+            Matrix out = iter.apply(m);
+            System.arraycopy(out.vals, 0, this.vals, idx, out.vals.length);
+        }
+        return this;
+    }
+
+    public Matrix sumPerBatch() {
+        BatchMatrix batchMatrix = new BatchMatrix(this.b, 1,1);
+        for (int i = 0; i < this.b; i++) {
+            int off = i*this.r*this.c;
+            double sum = 0;
+            for (int j = 0; j < this.r*this.c; j++) {
+                sum+=this.vals[off+j];
+            }
+            batchMatrix.set(i,0,0,sum);
+        }
+        return batchMatrix;
     }
 }

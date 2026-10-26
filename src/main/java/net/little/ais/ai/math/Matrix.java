@@ -158,4 +158,9 @@ public class Matrix {
     public double sum() {
         return Arrays.stream(this.vals).sum();
     }
+
+    public double max() {
+        return Arrays.stream(this.vals).max().orElse(0.);
+    }
+
 }
