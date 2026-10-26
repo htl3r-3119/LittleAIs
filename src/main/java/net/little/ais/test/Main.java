@@ -1,6 +1,7 @@
 package net.little.ais.test;
 
 import net.little.ais.ai.layer.*;
+import net.little.ais.ai.loss.CrossEntropy;
 import net.little.ais.ai.loss.Loss;
 import net.little.ais.ai.loss.MSE;
 import net.little.ais.ai.math.BatchMatrix;
@@ -14,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Layer SEQUENTIAL = new Sequential(List.of(new Linear(2,3), new Tanh(), new Linear(3,1), new Sig()));
+        Layer SEQUENTIAL = new Sequential(List.of(new Linear(2,3), new Tanh(), new Linear(3,2), new Relu(), new Softmax()));
 
         Tensor inputs = new Tensor(
           new BatchMatrix(4,1,2)
@@ -27,16 +28,16 @@ public class Main {
         );
 
         Tensor targets = new Tensor(
-                new BatchMatrix(4,1,1)
+                new BatchMatrix(4,1,2)
         );
         targets.MATRIX.fill(
-                0,
-                1,
-                1,
-                0
+                1,0,
+                0,1,
+                0,1,
+                1,0
         );
 
-        Loss loss = new MSE();
+        Loss loss = new CrossEntropy();
         Optimizer optimizer = new SGD(SEQUENTIAL.getParams());
 
         int EPOCHS = 10_000;
@@ -45,6 +46,7 @@ public class Main {
 
             Tensor pred = SEQUENTIAL.forward(inputs);
             Tensor l = loss.forward(pred, targets);
+            System.out.println(l.MATRIX.sum());
             l.backward();
 
             optimizer.step(0.1);
