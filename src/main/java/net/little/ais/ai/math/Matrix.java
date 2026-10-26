@@ -66,7 +66,7 @@ public class Matrix {
         }
         if (other instanceof BatchMatrix bm) {
             for (int b = 0; b < bm.b; b++) {
-                int off = bm.b*bm.r*bm.c;
+                int off = b*bm.r*bm.c;
                 for (int idx = 0; idx < this.vals.length; idx++) {
                     this.vals[idx] = func.apply(this.vals[idx], other.vals[off+idx]);
                 }
