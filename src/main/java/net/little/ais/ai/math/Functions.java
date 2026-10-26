@@ -12,7 +12,7 @@ public final class Functions {
     public static double TANH(double x) { return (Math.exp(2.*x)-1.)    / (Math.exp(2.*x)+1.); }
 
     public static double SIGD(double y) { return 1. - y; }
-    public static double RELUD(double x) { return x > 0 ? 1 : 0; }
-    public static double TANHD(double y) { return 1 - y*y; }
+    public static double RELUD(double x) { return x > 0 ? 1. : 0.; }
+    public static double TANHD(double y) { return 1. - y*y; }
 
 }

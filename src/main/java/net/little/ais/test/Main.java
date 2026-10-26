@@ -15,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Layer SEQUENTIAL = new Sequential(List.of(new Linear(2,3), new Relu(), new Linear(3,1), new Sig()));
+        Layer SEQUENTIAL = new Sequential(List.of(new Linear(2,3), new Tanh(), new Linear(3,1), new Sig()));
 
         Tensor[] inputs = {
                 new Tensor(new Matrix(1,2)),
@@ -42,7 +42,7 @@ public class Main {
         Loss loss = new MSE();
         Optimizer optimizer = new SGD(SEQUENTIAL.getParams());
 
-        int EPOCHS = 10000;
+        int EPOCHS = 10_000;
 
         for (int i = 0; i < EPOCHS; i++) {
             int idx = (int)(Math.random()*inputs.length);
@@ -51,9 +51,9 @@ public class Main {
 
             Tensor pred = SEQUENTIAL.forward(input);
             Tensor l = loss.forward(pred, target);
-            l.backward(Matrix.onesLike(1,1));
+            l.backward();
 
-            optimizer.step(0.1);
+            optimizer.step(0.8);
             optimizer.zeroGrad();
         }
 

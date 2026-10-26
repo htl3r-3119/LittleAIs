@@ -34,6 +34,10 @@ public class Tensor {
         this.GRAD.iterateSelf(Functions::ADD, grad);
     }
 
+    public void backward() {
+        this.backward(Matrix.onesLike(this.MATRIX.r(), this.MATRIX.c()));
+    }
+
     public void backward(Matrix grad) {
         this.push(grad);
     }

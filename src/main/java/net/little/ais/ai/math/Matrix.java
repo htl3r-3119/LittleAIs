@@ -121,4 +121,13 @@ public class Matrix {
         m.iterateSelf(_ -> 1.);
         return m;
     }
+
+    public int r() {
+        return this.r;
+    }
+
+    public int c() {
+        return this.c;
+    }
+
 }
