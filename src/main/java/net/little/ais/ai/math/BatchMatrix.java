@@ -118,4 +118,21 @@ public class BatchMatrix extends Matrix {
         }
         return this;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder strB = new StringBuilder();
+        strB.append("{\n");
+        for (int b = 0; b < this.b; b++) {
+            for (int r = 0; r < this.r; r++) {
+                strB.append('[');
+                for (int c = 0; c < this.c - 1; c++) {
+                    strB.append(this.get(b, r, c)).append(", ");
+                }
+                strB.append(this.get(b, r, this.c - 1)).append("]\n");
+            }
+        }
+        strB.append("}");
+        return strB.toString();
+    }
 }
