@@ -1,5 +1,6 @@
 package net.little.ais.ai.math;
 
+import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -154,4 +155,7 @@ public class Matrix {
         return this.c;
     }
 
+    public double sum() {
+        return Arrays.stream(this.vals).sum();
+    }
 }
