@@ -64,7 +64,16 @@ public class Matrix {
         if (!this.fitForSimpleOp(other)) {
             throw new RuntimeException(String.format("The dimensions don't fit (%d, %d) | (%d, %d)", this.r, this.c, other.r, other.c));
         }
-        for (int idx = 0; idx < this.vals.length; idx++) {
+        if (other instanceof BatchMatrix bm) {
+            for (int b = 0; b < bm.b; b++) {
+                int off = bm.b*bm.r*bm.c;
+                for (int idx = 0; idx < this.vals.length; idx++) {
+                    this.vals[idx] = func.apply(this.vals[idx], other.vals[off+idx]);
+                }
+            }
+            return this;
+        }
+        for (int idx = 0; idx < other.vals.length; idx++) {
             this.vals[idx] = func.apply(this.vals[idx], other.vals[idx]);
         }
         return this;

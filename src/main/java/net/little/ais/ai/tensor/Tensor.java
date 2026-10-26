@@ -1,5 +1,6 @@
 package net.little.ais.ai.tensor;
 
+import net.little.ais.ai.math.BatchMatrix;
 import net.little.ais.ai.math.Functions;
 import net.little.ais.ai.math.Matrix;
 
@@ -35,7 +36,8 @@ public class Tensor {
     }
 
     public void backward() {
-        this.backward(Matrix.onesLike(this.MATRIX.r(), this.MATRIX.c()));
+        if (this.MATRIX instanceof BatchMatrix b) this.backward(BatchMatrix.onesLike(b.b(), b.r(), b.c()));
+        else this.backward(Matrix.onesLike(this.MATRIX.r(), this.MATRIX.c()));
     }
 
     public void backward(Matrix grad) {

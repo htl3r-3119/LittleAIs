@@ -1,5 +1,7 @@
 package net.little.ais.ai.math;
 
+import java.util.function.BiFunction;
+
 public class BatchMatrix extends Matrix {
 
     int b;
@@ -95,5 +97,25 @@ public class BatchMatrix extends Matrix {
         BatchMatrix copy = new BatchMatrix(this.b,this.r,this.c);
         copy.fill(this.vals);
         return copy;
+    }
+
+    @Override
+    public BatchMatrix iterateSelf(BiFunction<Double, Double, Double> func, Matrix other) {
+        if (!this.fitForSimpleOp(other)) {
+            throw new RuntimeException(String.format("The dimensions don't fit (%d, %d) | (%d, %d)", this.r, this.c, other.r, other.c));
+        }
+        if (other instanceof BatchMatrix) {
+            for (int idx = 0; idx < this.vals.length; idx++) {
+                this.vals[idx] = func.apply(this.vals[idx], other.vals[idx]);
+            }
+            return this;
+        }
+        for (int b = 0; b < this.b; b++) {
+            int off = b*this.r*this.c;
+            for (int idx = 0; idx < other.vals.length; idx++) {
+                this.vals[off+idx] = func.apply(this.vals[off+idx], other.vals[idx]);
+            }
+        }
+        return this;
     }
 }
