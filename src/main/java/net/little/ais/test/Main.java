@@ -4,12 +4,10 @@ import net.little.ais.ai.layer.*;
 import net.little.ais.ai.loss.Loss;
 import net.little.ais.ai.loss.MSE;
 import net.little.ais.ai.math.BatchMatrix;
-import net.little.ais.ai.math.Matrix;
 import net.little.ais.ai.opt.Optimizer;
 import net.little.ais.ai.opt.SGD;
 import net.little.ais.ai.tensor.Tensor;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Main {
@@ -34,8 +32,8 @@ public class Main {
         targets.MATRIX.fill(
                 0,
                 1,
-                0,
-                1
+                1,
+                0
         );
 
         Loss loss = new MSE();
@@ -49,7 +47,7 @@ public class Main {
             Tensor l = loss.forward(pred, targets);
             l.backward();
 
-            optimizer.step(0.8);
+            optimizer.step(0.1);
             optimizer.zeroGrad();
         }
 
