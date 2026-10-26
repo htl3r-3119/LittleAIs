@@ -20,6 +20,9 @@
 		],
 		"client": [
 			"net.little.ais.client.LittleAIsClient"
+		],
+		"fabric-datagen": [
+			"net.little.ais.client.datagen.ModDataGenerator"
 		]
 	},
 	"mixins": [
