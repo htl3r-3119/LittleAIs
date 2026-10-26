@@ -10,4 +10,90 @@ public class BatchMatrix extends Matrix {
         this.r /= b;
     }
 
+    public double get(int b, int r, int c) {
+        return this.vals[b*this.r*this.c+r*this.c+c];
+    }
+
+    public void set(int b, int r, int c, double d) {
+        this.vals[b*this.r*this.c+r*this.c+c] = d;
+    }
+
+    public int b() {
+        return this.b;
+    }
+
+    public static BatchMatrix onesLike(int b, int r, int c) {
+        BatchMatrix m = new BatchMatrix(b,r,c);
+        m.iterateSelf(_ -> 1.);
+        return m;
+    }
+
+    @Override
+    public boolean fitForSimpleOp(Matrix other) {
+        return super.fitForSimpleOp(other) && !(other instanceof BatchMatrix batch && batch.b != this.b);
+    }
+
+    @Override
+    public boolean fitForMatMul(Matrix other) {
+        return super.fitForMatMul(other) && !(other instanceof BatchMatrix bm && (bm.b != 1 && bm.b != this.b));
+    }
+
+    @Override
+    public Matrix matmul(Matrix other) {
+        if (!this.fitForMatMul(other)) {
+            throw new RuntimeException("Dimensions don't fit matrix multiplication");
+        }
+        if (other instanceof BatchMatrix bm) {
+            return matmul(this, bm);
+        }
+        BatchMatrix m = new BatchMatrix(this.b, this.r, other.c);
+        for (int b = 0; b < this.b; b++) {
+            for (int i = 0; i < this.r; i++) {
+                for (int j = 0; j < other.c; j++) {
+                    double sum = 0;
+                    for (int k = 0; k < this.c; k++) {
+                        sum += this.get(b,i,k) * other.get(k,j);
+                    }
+                    m.set(b, i, j, sum);
+                }
+            }
+        }
+        return m;
+    }
+
+    public static BatchMatrix matmul(BatchMatrix x, BatchMatrix y) {
+        BatchMatrix m = new BatchMatrix(x.b, x.r, y.c);
+        for (int b = 0; b < m.b; b++) {
+            for (int i = 0; i < m.r; i++) {
+                for (int j = 0; j < m.c; j++) {
+                    double sum = 0;
+                    for (int k = 0; k < x.c; k++) {
+                        sum += x.get(b, i, k) * y.get(b, k, j);
+                    }
+                    m.set(b, i, j, sum);
+                }
+            }
+        }
+        return m;
+    }
+
+    @Override
+    public Matrix transpose() {
+        BatchMatrix m = new BatchMatrix(this.b, this.c, this.r);
+        for (int i = 0; i < this.b; i++) {
+            for (int j = 0; j < this.r; j++) {
+                for (int k = 0; k < this.c; k++) {
+                    m.set(i,k,j,this.get(i,j,k));
+                }
+            }
+        }
+        return m;
+    }
+
+    @Override
+    public Matrix clone() {
+        BatchMatrix copy = new BatchMatrix(this.b,this.r,this.c);
+        copy.fill(this.vals);
+        return copy;
+    }
 }

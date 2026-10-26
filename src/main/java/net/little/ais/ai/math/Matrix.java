@@ -74,6 +74,21 @@ public class Matrix {
         if (!this.fitForMatMul(other)) {
             throw new RuntimeException("Dimensions don't fit matrix multiplication");
         }
+        if (other instanceof BatchMatrix bm) {
+            BatchMatrix m = new BatchMatrix(bm.b, this.r, other.c);
+            for (int b = 0; b < m.b; b++) {
+                for (int i = 0; i < this.r; i++) {
+                    for (int j = 0; j < other.c; j++) {
+                        double sum = 0;
+                        for (int k = 0; k < this.c; k++) {
+                            sum += this.get(i,k) * bm.get(b,k,j);
+                        }
+                        m.set(b, i, j, sum);
+                    }
+                }
+            }
+            return m;
+        }
         Matrix m = new Matrix(this.r, other.c);
         for (int i = 0; i < this.r; i++) {
             for (int j = 0; j < other.c; j++) {
