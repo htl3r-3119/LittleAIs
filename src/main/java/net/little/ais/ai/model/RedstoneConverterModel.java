@@ -13,8 +13,7 @@ public class RedstoneConverterModel {
                 new Linear(3,8),
                 new Relu(),
                 new Linear(8,15),
-                new Relu(),
-                new Softmax()
+                new Relu()
         ));
     }
 

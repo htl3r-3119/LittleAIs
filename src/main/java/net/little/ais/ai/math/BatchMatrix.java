@@ -1,7 +1,5 @@
 package net.little.ais.ai.math;
 
-import com.mojang.datafixers.types.Func;
-
 import java.util.function.BiFunction;
 import java.util.function.Function;
 

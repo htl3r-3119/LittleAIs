@@ -6,7 +6,7 @@ import net.little.ais.ai.math.Matrix;
 
 public class CrossEntropyTensor extends Tensor {
 
-    Tensor softmax;
+    public Tensor softmax;
 
     private static Matrix crossEntropy(Matrix softmax, Matrix labels) {
         Matrix mul = labels.clone().iterateSelf(x -> -x).mul(softmax.clone().iterateSelf(Math::log));
@@ -30,6 +30,7 @@ public class CrossEntropyTensor extends Tensor {
                 logits,
                 labels
         };
+        this.GRAD = this.softmax.MATRIX.clone().iterateSelf(_ -> 0.);
     }
 
     @Override
@@ -37,5 +38,11 @@ public class CrossEntropyTensor extends Tensor {
         super.backward(grad);
         Tensor g = this.softmax.sub(this.PARENTS[1]);
         this.PARENTS[0].backward(grad.mul(g.MATRIX));
+    }
+
+    @Override
+    public void backward() {
+        if (this.softmax.MATRIX instanceof BatchMatrix b) this.backward(BatchMatrix.onesLike(b.b(), b.r(), b.c()));
+        else this.backward(Matrix.onesLike(this.softmax.MATRIX.r(), this.softmax.MATRIX.c()));
     }
 }
