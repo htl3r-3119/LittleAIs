@@ -49,6 +49,7 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
 
     @Override
     protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        if (state.getValue(FACING) != direction) return 0;
         if (!(level.getBlockEntity(pos) instanceof RedstoneFunctionConverterBlockEntity rE)) {
             return 0;
         }

@@ -1,19 +1,20 @@
 {
   "variants": {
     "facing=north": {
-      "model": "little_ais:block/redstone_function_converter"
-    },
-    "facing=east": {
-      "model": "little_ais:block/redstone_function_converter",
-      "y": 90
-    },
-    "facing=south": {
       "model": "little_ais:block/redstone_function_converter",
       "y": 180
     },
-    "facing=west": {
+    "facing=east": {
       "model": "little_ais:block/redstone_function_converter",
       "y": 270
+    },
+    "facing=south": {
+      "model": "little_ais:block/redstone_function_converter",
+      "y": 0
+    },
+    "facing=west": {
+      "model": "little_ais:block/redstone_function_converter",
+      "y": 90
     }
   }
 }

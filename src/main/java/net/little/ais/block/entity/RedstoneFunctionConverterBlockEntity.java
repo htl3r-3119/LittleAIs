@@ -1,19 +1,17 @@
 package net.little.ais.block.entity;
 
-import com.ibm.icu.lang.UCharacter;
+import net.little.ais.ai.math.Matrix;
+import net.little.ais.ai.model.RedstoneConverterModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
@@ -21,9 +19,11 @@ import org.jspecify.annotations.Nullable;
 public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
 
     private int signal = 0;
+    private RedstoneConverterModel MODEL;
 
     public RedstoneFunctionConverterBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(ModBlockEntities.REDSTONE_FUNCTION_CONVERTER_BLOCK_ENTITY_BLOCK_ENTITY_TYPE, worldPosition, blockState);
+        this.MODEL = new RedstoneConverterModel();
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, RedstoneFunctionConverterBlockEntity redstoneFunctionConverterBlockEntity) {
@@ -58,10 +58,18 @@ public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
         super.saveAdditional(output);
     }
 
+    private void saveMatrix(String name, Matrix m, ValueOutput output) {
+
+    }
+
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         this.signal = input.getIntOr("signal", 0);
+    }
+
+    private void loadMatrix(String name, Matrix m, ValueInput input) {
+
     }
 
     @Override
