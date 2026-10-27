@@ -11,7 +11,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ComparatorBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
 
 import java.util.function.Function;
 
@@ -20,7 +22,7 @@ public class ModBlocks {
     public static final Block REDSTONE_FUNCTION_CONVERTER_BLOCK = register(
             create("redstone_function_converter"),
             RedstoneFunctionConverterBlock::new,
-            BlockBehaviour.Properties.of().isRedstoneConductor(Blocks::never)
+            BlockBehaviour.Properties.of().instabreak().sound(SoundType.COPPER_BULB).pushReaction(PushReaction.POPPED)
     );
 
     public static void initialize() {

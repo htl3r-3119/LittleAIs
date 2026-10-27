@@ -1,0 +1,31 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "little_ais:block/redstone_function_converter",
+		"particle": "little_ais:block/redstone_function_converter"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 2, 16],
+			"faces": {
+				"north": {"uv": [8, 0, 16, 1], "texture": "#0", "cullface": "north"},
+				"east": {"uv": [8, 1, 16, 2], "texture": "#0", "cullface": "east"},
+				"south": {"uv": [8, 2, 16, 3], "texture": "#0", "cullface": "south"},
+				"west": {"uv": [8, 3, 16, 4], "texture": "#0", "cullface": "west"},
+				"up": {"uv": [8, 8, 0, 0], "texture": "#0"},
+				"down": {"uv": [8, 8, 0, 16], "texture": "#0", "cullface": "down"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [57.67, 30.46, -38.73],
+			"translation": [3, 3.75, 0],
+			"scale": [0.8, 0.8, 0.8]
+		}
+	}
+}
