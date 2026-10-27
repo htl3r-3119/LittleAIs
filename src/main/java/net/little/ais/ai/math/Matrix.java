@@ -163,4 +163,16 @@ public class Matrix {
         return Arrays.stream(this.vals).max().orElse(0.);
     }
 
+    public int argMax() {
+        int idx = 0;
+        double max = this.vals[0];
+        for (int i = 1; i < this.vals.length; i++) {
+            double val = this.vals[i];
+            if (val > max) {
+                idx = i;
+                max = val;
+            }
+        }
+        return idx;
+    }
 }
