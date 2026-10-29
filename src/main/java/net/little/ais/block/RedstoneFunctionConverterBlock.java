@@ -3,6 +3,11 @@ package net.little.ais.block;
 import net.little.ais.block.entity.RedstoneFunctionConverterBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -13,7 +18,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.redstone.Orientation;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 
 public class RedstoneFunctionConverterBlock extends DiodeBlock implements EntityBlock {
@@ -38,22 +43,56 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
     }
 
     @Override
-    protected int ownSignal(BlockState state, BlockGetter level, BlockPos pos) {
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (!(blockEntity instanceof RedstoneFunctionConverterBlockEntity rE)) {
-            return 0;
+    protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        if (state.getValue(FACING) == direction) {
+            if (!(level.getBlockEntity(pos) instanceof RedstoneFunctionConverterBlockEntity rE)) {
+                return 0;
+            }
+            return rE.signal();
         }
-        System.out.println("GET SIGNAL");
-        return rE.signal();
+        return 0;
     }
 
     @Override
-    protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-        if (state.getValue(FACING) != direction) return 0;
-        if (!(level.getBlockEntity(pos) instanceof RedstoneFunctionConverterBlockEntity rE)) {
-            return 0;
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!player.isShiftKeyDown()) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof RedstoneFunctionConverterBlockEntity eR) {
+                eR.shouldTrain = !eR.shouldTrain;
+                player.sendOverlayMessage(Component.literal("Converter is Learning: " + eR.shouldTrain));
+                return InteractionResult.SUCCESS;
+            }
+            return InteractionResult.FAIL;
         }
-        return rE.signal();
+        return super.useWithoutItem(state,level,pos,player,hitResult);
+    }
+
+    @Override
+    protected int getInputSignal(Level level, BlockPos pos, BlockState state) {
+        int left = readSignalFromLeft(level, pos, state);
+        int down = readSignalFromDown(level, pos, state);
+        int right = readSignalFromRight(level, pos, state);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof RedstoneFunctionConverterBlockEntity eR) {
+            eR.updateInputs(left, down, right);
+        }
+        return Math.max(left, Math.max(down, right));
+    }
+
+    private int readSignalFromDown(Level level, BlockPos pos, BlockState state) {
+        Direction value = state.getValue(FACING);
+        BlockPos target = pos.relative(value);
+        return level.getSignal(target, value);
+    }
+    private int readSignalFromLeft(Level level, BlockPos pos, BlockState state) {
+        Direction value = state.getValue(FACING).getClockWise();
+        BlockPos target = pos.relative(value);
+        return level.getSignal(target, value);
+    }
+    private int readSignalFromRight(Level level, BlockPos pos, BlockState state) {
+        Direction value = state.getValue(FACING).getCounterClockWise();
+        BlockPos target = pos.relative(value);
+        return level.getSignal(target, value);
     }
 
     @Override
@@ -62,8 +101,9 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
-        super.neighborChanged(state, level, pos, block, orientation, movedByPiston);
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        super.tick(state, level, pos, random);
+        System.out.println("TICK");
     }
 
     @Override

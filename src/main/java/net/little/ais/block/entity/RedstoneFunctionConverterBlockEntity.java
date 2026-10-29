@@ -1,6 +1,7 @@
 package net.little.ais.block.entity;
 
 import net.little.ais.ai.math.Matrix;
+import net.little.ais.ai.model.DataSet;
 import net.little.ais.ai.model.RedstoneConverterModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -18,18 +19,42 @@ import org.jspecify.annotations.Nullable;
 
 public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
 
+    private static final int MAX_TRAINING_TIME = 20*30;
+
     private int signal = 0;
-    private RedstoneConverterModel MODEL;
+    private final RedstoneConverterModel MODEL;
+    private int left = 0, down = 0, right = 0;
+    public boolean shouldTrain = false;
+    private int ticksTraining = 0;
 
     public RedstoneFunctionConverterBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(ModBlockEntities.REDSTONE_FUNCTION_CONVERTER_BLOCK_ENTITY_BLOCK_ENTITY_TYPE, worldPosition, blockState);
         this.MODEL = new RedstoneConverterModel();
+        this.MODEL.dataSet.add(0,0,0,15);
+        this.MODEL.dataSet.add(0,0,15,0);
+        this.MODEL.dataSet.add(0,15,0,0);
+        this.MODEL.dataSet.add(15,0,0,0);
+        this.MODEL.dataSet.add(15,15,15,15);
     }
 
-    public static void tick(Level level, BlockPos blockPos, BlockState blockState, RedstoneFunctionConverterBlockEntity redstoneFunctionConverterBlockEntity) {
-        redstoneFunctionConverterBlockEntity.signal = (redstoneFunctionConverterBlockEntity.signal+1)%16;
-        // System.out.println("TICK: " + level + ", " + redstoneFunctionConverterBlockEntity.signal);
-        redstoneFunctionConverterBlockEntity.setChanged();
+    public DataSet getData() {
+        return this.MODEL.dataSet;
+    }
+
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, RedstoneFunctionConverterBlockEntity eR) {
+        // eR.signal = (eR.signal+1)%16;
+        // System.out.println("TICK: " + level + ", " + eR.signal);
+        // eR.setChanged();
+        if (eR.shouldTrain) {
+            System.out.println(eR.MODEL.train());
+            eR.ticksTraining = eR.ticksTraining + 1;
+            if (eR.ticksTraining >= MAX_TRAINING_TIME) {
+                eR.ticksTraining = 0;
+                eR.shouldTrain = false;
+            }
+            eR.signal = eR.MODEL.predict(eR.left,eR.down,eR.right);
+            eR.setChanged();
+        }
     }
 
     @Override
@@ -80,4 +105,16 @@ public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
     public static <T extends BlockEntity> void tick(Level level, BlockPos blockPos, BlockState blockState, T t) {
         if (t instanceof RedstoneFunctionConverterBlockEntity rE) tick(level,blockPos,blockState,rE);
     }
+
+    public void updateInputs(int left, int down, int right) {
+        if (this.left != left || this.down != down || this.right != right) {
+            System.out.println("UPDATE");
+            this.signal = this.MODEL.predict(left, down, right);
+            this.left = left;
+            this.down = down;
+            this.right = right;
+            this.setChanged();
+        }
+    }
+
 }
