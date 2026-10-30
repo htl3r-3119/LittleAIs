@@ -28,25 +28,10 @@ public class ScrollableListWidget extends AbstractWidget {
         this.dataSet = dataSet;
         this.childW = childW;
         this.childH = childH;
-        int startY = y-childH;
-        x = x + width/2-childW/2;
         for (Map.Entry<DataSet.Input, Integer> entry : dataSet) {
             DataSet.Input key = entry.getKey();
             int i = entry.getValue();
-            DataMapEntryWidget widget = new DataMapEntryWidget(x, startY += childH, childW, childH, Component.literal("TEEST"), key.a(), key.b(), key.c(), i);
-            this.children.add(widget);
-        }
-        for (Map.Entry<DataSet.Input, Integer> entry : dataSet) {
-            DataSet.Input key = entry.getKey();
-            int i = entry.getValue();
-            DataMapEntryWidget widget = new DataMapEntryWidget(x, startY += childH, childW, childH, Component.literal("TEEST"), key.a(), key.b(), key.c(), i);
-            this.children.add(widget);
-        }
-        for (Map.Entry<DataSet.Input, Integer> entry : dataSet) {
-            DataSet.Input key = entry.getKey();
-            int i = entry.getValue();
-            DataMapEntryWidget widget = new DataMapEntryWidget(x, startY += childH, childW, childH, Component.literal("TEEST"), key.a(), key.b(), key.c(), i);
-            this.children.add(widget);
+            add(key.a(), key.b(), key.c(), i);
         }
     }
 
@@ -56,18 +41,33 @@ public class ScrollableListWidget extends AbstractWidget {
 
     @Override
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        graphics.fill(getX(), getY(), getX()+this.width, getY()+this.height, Color.RED.getRGB());
+        graphics.fill(getX(), getY(), getX()+this.width, getY()+this.height, Color.BLACK.getRGB());
 
         int x = this.getX();
         int y = this.getY();
         graphics.enableScissor(x, y, x + this.getWidth(), y + this.getHeight());
         this.children.forEach(dataMapEntryWidget -> dataMapEntryWidget.extractWidgetRenderState(graphics, mouseX, mouseY, a));
         graphics.disableScissor();
-        for (int idx = 0; idx < this.children.size(); idx++) {
-            DataMapEntryWidget w = this.children.get(idx);
-            w.setY(y + this.childH*idx-this.scrollProgress);
+        this.updateChildPositions();
+
+        x = this.getX();
+        y = this.getY();
+
+        int pad = 1;
+        int color = this.isFocused() ? Color.WHITE.getRGB() : Color.LIGHT_GRAY.getRGB();
+        graphics.fill(x,y,x+this.width,y+pad,color);
+        graphics.fill(x,y,x+pad,y+this.height,color);
+        graphics.fill(x+this.width-pad,y,x+this.width,y+this.height,color);
+        graphics.fill(x,y+this.height-pad,x+this.width,y+this.height,color);
+    }
+
+    private void updateChildPositions() {
+        int y = getY();
+        for (DataMapEntryWidget w : this.children) {
+            w.setY(y - this.scrollProgress);
+            y += childH;
         }
-    };
+    }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
@@ -75,7 +75,9 @@ public class ScrollableListWidget extends AbstractWidget {
         double y = event.y();
         DataMapEntryWidget w = get((int) x, (int) y);
         if (w == null) return super.mouseClicked(event,doubleClick);
+        if (this.focused != null) this.focused.setFocused(false);
         this.focused = w;
+        w.setFocused(true);
         return this.focused.mouseClicked(event,doubleClick) && super.mouseClicked(event, doubleClick);
     }
 
@@ -86,6 +88,32 @@ public class ScrollableListWidget extends AbstractWidget {
                         w.getY() <= y &&
                         y <= w.getY()+w.getHeight()
         ).findAny().orElse(null);
+    }
+
+    public void remove() {
+        if (this.focused == null) return;
+        this.children.remove(this.focused);
+        this.focused = null;
+        this.scroll(-this.childH);
+        this.updateChildPositions();
+    }
+
+    public void add(int a, int b, int c, int d) {
+        int x=this.getX()+this.width/2-this.childW/2, y = 0; // this.children.isEmpty() ? 0 : this.children.getLast().getY()+this.childH;
+        this.children.add(
+                new DataMapEntryWidget(
+                        x,y,childW,childH,
+                        Component.literal("entry"),
+                        a,b,c,d
+                )
+        );
+        if (this.totalHeight() > this.height) this.scrollProgress = totalHeight()-this.height;
+        this.updateChildPositions();
+    }
+
+    public void save() {
+        this.dataSet.clear();
+        this.children.forEach(dataMapEntryWidget -> dataMapEntryWidget.save(this.dataSet));
     }
 
     @Override
@@ -105,12 +133,16 @@ public class ScrollableListWidget extends AbstractWidget {
     @Override
     public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
         if (!canScroll()) return false;
-        /*
-        if (this.children.getLast().getY() <= this.getY()+this.getHeight()-this.childH) {
-            return false;
-        }*/
-        this.scrollProgress = Math.max(0,Math.min(totalHeight()-this.height, this.scrollProgress - (int) scrollY));
+
+        if (Math.abs(scrollY) >= 1) {
+            scrollY *= 5;
+        }
+        this.scroll((int) scrollY);
         return true;
+    }
+
+    private void scroll(int amount) {
+        this.scrollProgress = Math.max(0,Math.min(totalHeight()-this.height, this.scrollProgress - amount));
     }
 
     private boolean canScroll() {

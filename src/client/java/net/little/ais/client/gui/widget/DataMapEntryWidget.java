@@ -1,5 +1,6 @@
 package net.little.ais.client.gui.widget;
 
+import net.little.ais.ai.model.DataSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -30,30 +31,47 @@ public class DataMapEntryWidget extends AbstractWidget {
         int x = this.getX();
         int y = this.getY();
         int h = this.height;
+
+        int bg = Color.BLACK.getRGB();
+        int text = Color.WHITE.getRGB();
+        int cursor = new Color(204,0,34).getRGB();
+
         Font font = Minecraft.getInstance().font;
-        graphics.fill(x,y,x+=widthPerInp,y+h, Color.LIGHT_GRAY.getRGB());
-        graphics.fill(x,y,x+=widthPerInp,y+h, Color.LIGHT_GRAY.getRGB());
-        graphics.fill(x,y,x+=widthPerInp,y+h, Color.LIGHT_GRAY.getRGB());
-        graphics.fill(x,y,x+=widthPerInp,y+h, Color.LIGHT_GRAY.getRGB());
-        graphics.fill(x,y,x+widthPerInp,y+h, Color.LIGHT_GRAY.getRGB());
+        graphics.fill(x,y,x+=widthPerInp,y+h, bg);
+        graphics.fill(x,y,x+=widthPerInp,y+h, bg);
+        graphics.fill(x,y,x+=widthPerInp,y+h, bg);
+        graphics.fill(x,y,x+=widthPerInp,y+h, bg);
+        graphics.fill(x,y,x+widthPerInp,y+h, bg);
+
         x = this.getX();
         y = this.getY();
 
         int padding = 1;
 
         for (int i = 0; i < 3; i++) {
-            graphics.text(font, Component.literal(Integer.toString(this.data[i])).withoutShadow(), x+widthPerInp/2-font.width(Integer.toString(this.data[i]))/2,y+h/2-font.lineHeight/2+padding, Color.BLACK.getRGB(), true);
+            graphics.text(font, Component.literal(Integer.toString(this.data[i])).withoutShadow(), x+widthPerInp/2-font.width(Integer.toString(this.data[i]))/2,y+h/2-font.lineHeight/2+padding, Color.WHITE.getRGB(), true);
             x += widthPerInp;
         }
-        graphics.text(font, Component.literal("->").withoutShadow(), x+widthPerInp/2-font.width("->")/2,y+h/2-font.lineHeight/2, Color.BLACK.getRGB(), true);
+        graphics.text(font, Component.literal("->").withoutShadow(), x+widthPerInp/2-font.width("->")/2,y+h/2-font.lineHeight/2, text, true);
         x += widthPerInp;
-        graphics.text(font, Component.literal(Integer.toString(this.data[3])).withoutShadow(), x+widthPerInp/2-font.width(Integer.toString(this.data[3]))/2,y+h/2-font.lineHeight/2+padding, Color.BLACK.getRGB(), true);
+        graphics.text(font, Component.literal(Integer.toString(this.data[3])).withoutShadow(), x+widthPerInp/2-font.width(Integer.toString(this.data[3]))/2,y+h/2-font.lineHeight/2+padding, text, true);
 
         x = this.getX() + this.current*widthPerInp;
         int arrayIdx = Math.min(this.current, 3);
         x = x + widthPerInp/2 + font.width(Integer.toString(this.data[arrayIdx]))/2;
         y = y + h/2 - font.lineHeight/2;
-        graphics.fill(x,y,x + font.width("_")/2,y+font.lineHeight, Color.RED.getRGB());
+
+        graphics.fill(x,y,x + font.width("_")/3,y+font.lineHeight, cursor);
+
+        x = this.getX();
+        y = this.getY();
+
+        int pad = 1;
+        int color = this.isFocused() ? Color.WHITE.getRGB() : Color.DARK_GRAY.getRGB();
+        graphics.fill(x,y,x+this.width,y+pad,color);
+        graphics.fill(x,y,x+pad,y+this.height,color);
+        graphics.fill(x+this.width-pad,y,x+this.width,y+this.height,color);
+        graphics.fill(x,y+this.height-pad,x+this.width,y+this.height,color);
     }
 
     private void updateCursor(int mouseX) {
@@ -95,6 +113,10 @@ public class DataMapEntryWidget extends AbstractWidget {
 
     @Override
     protected void updateWidgetNarration(NarrationElementOutput output) {
+    }
+
+    public void save(DataSet dataSet) {
+        dataSet.add(this.data[0], this.data[1], this.data[2], this.data[3]);
     }
 
 }

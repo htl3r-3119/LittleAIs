@@ -45,7 +45,7 @@ public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
         // eR.signal = (eR.signal+1)%16;
         // System.out.println("TICK: " + level + ", " + eR.signal);
         // eR.setChanged();
-        if (eR.shouldTrain) {
+        if (eR.shouldTrain && !level.isClientSide()) {
             System.out.println(eR.MODEL.train());
             eR.ticksTraining = eR.ticksTraining + 1;
             if (eR.ticksTraining >= MAX_TRAINING_TIME) {
@@ -108,7 +108,6 @@ public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
 
     public void updateInputs(int left, int down, int right) {
         if (this.left != left || this.down != down || this.right != right) {
-            System.out.println("UPDATE");
             this.signal = this.MODEL.predict(left, down, right);
             this.left = left;
             this.down = down;

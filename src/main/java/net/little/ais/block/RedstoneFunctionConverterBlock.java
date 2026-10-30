@@ -74,7 +74,8 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
         int right = readSignalFromRight(level, pos, state);
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof RedstoneFunctionConverterBlockEntity eR) {
-            eR.updateInputs(left, down, right);
+            if (!level.isClientSide()) eR.updateInputs(left, down, right);
+            eR.setChanged();
         }
         return Math.max(left, Math.max(down, right));
     }
@@ -103,7 +104,6 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
     @Override
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
-        System.out.println("TICK");
     }
 
     @Override
