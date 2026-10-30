@@ -1,6 +1,7 @@
 package net.little.ais.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.little.ais.client.block.entity.ModBlockRendering;
 import net.little.ais.client.event.ModEvents;
 
 public class LittleAIsClient implements ClientModInitializer {
@@ -8,5 +9,6 @@ public class LittleAIsClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		ModEvents.initialize();
+		ModBlockRendering.initialize();
 	}
 }

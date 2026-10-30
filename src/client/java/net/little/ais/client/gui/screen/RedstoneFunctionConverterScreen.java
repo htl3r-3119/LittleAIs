@@ -40,7 +40,7 @@ public class RedstoneFunctionConverterScreen extends Screen {
                 this.width / 2, this.height/2-HEIGHT/2,
                 WIDTH / 2, HEIGHT,
                 120,20,
-                Component.literal("TEST"),
+                Component.literal("entries"),
                 this.entity.getData()
         );
         this.addRenderableWidget(entries);

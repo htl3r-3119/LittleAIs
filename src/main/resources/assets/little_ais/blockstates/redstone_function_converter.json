@@ -1,20 +1,203 @@
 {
-  "variants": {
-    "facing=north": {
-      "model": "little_ais:block/redstone_function_converter",
-      "y": 180
+  "multipart": [
+    {
+      "apply": {
+        "model": "little_ais:block/redstone_function_converter",
+        "y": 90
+      },
+      "when": {
+        "facing": "north"
+      }
     },
-    "facing=east": {
-      "model": "little_ais:block/redstone_function_converter",
-      "y": 270
+    {
+      "apply": {
+        "model": "little_ais:block/left_line_on",
+        "y": 90
+      },
+      "when": {
+        "facing": "north",
+        "powered_left": true
+      }
     },
-    "facing=south": {
-      "model": "little_ais:block/redstone_function_converter",
-      "y": 0
+    {
+      "apply": {
+        "model": "little_ais:block/down_line_on",
+        "y": 90
+      },
+      "when": {
+        "facing": "north",
+        "powered_down": true
+      }
     },
-    "facing=west": {
-      "model": "little_ais:block/redstone_function_converter",
-      "y": 90
+    {
+      "apply": {
+        "model": "little_ais:block/right_line_on",
+        "y": 90
+      },
+      "when": {
+        "facing": "north",
+        "powered_right": true
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/up_line",
+        "y": 90
+      },
+      "when": {
+        "facing": "north",
+        "powered_up": true
+      }
+    },
+
+    {
+      "apply": {
+        "model": "little_ais:block/redstone_function_converter",
+        "y": 180
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/left_line_on",
+        "y": 180
+      },
+      "when": {
+        "facing": "east",
+        "powered_left": true
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/down_line_on",
+        "y": 180
+      },
+      "when": {
+        "facing": "east",
+        "powered_down": true
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/right_line_on",
+        "y": 180
+      },
+      "when": {
+        "facing": "east",
+        "powered_right": true
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/up_line",
+        "y": 180
+      },
+      "when": {
+        "facing": "east",
+        "powered_up": true
+      }
+    },
+
+    {
+      "apply": {
+        "model": "little_ais:block/redstone_function_converter",
+        "y": 270
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/left_line_on",
+        "y": 270
+      },
+      "when": {
+        "facing": "south",
+        "powered_left": true
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/down_line_on",
+        "y": 270
+      },
+      "when": {
+        "facing": "south",
+        "powered_down": true
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/right_line_on",
+        "y": 270
+      },
+      "when": {
+        "facing": "south",
+        "powered_right": true
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/up_line",
+        "y": 270
+      },
+      "when": {
+        "facing": "south",
+        "powered_up": true
+      }
+    },
+
+    {
+      "apply": {
+        "model": "little_ais:block/redstone_function_converter",
+        "y": 0
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/left_line_on",
+        "y": 0
+      },
+      "when": {
+        "facing": "west",
+        "powered_left": true
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/down_line_on",
+        "y": 0
+      },
+      "when": {
+        "facing": "west",
+        "powered_down": true
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/right_line_on",
+        "y": 0
+      },
+      "when": {
+        "facing": "west",
+        "powered_right": true
+      }
+    },
+    {
+      "apply": {
+        "model": "little_ais:block/up_line",
+        "y": 0
+      },
+      "when": {
+        "facing": "west",
+        "powered_up": true
+      }
     }
-  }
+  ]
 }

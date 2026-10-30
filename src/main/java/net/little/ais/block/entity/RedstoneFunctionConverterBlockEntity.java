@@ -3,6 +3,7 @@ package net.little.ais.block.entity;
 import net.little.ais.ai.math.Matrix;
 import net.little.ais.ai.model.DataSet;
 import net.little.ais.ai.model.RedstoneConverterModel;
+import net.little.ais.block.RedstoneFunctionConverterBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -112,8 +113,30 @@ public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
             this.left = left;
             this.down = down;
             this.right = right;
+            BlockState blockState1 = getBlockState().setValue(RedstoneFunctionConverterBlock.POWERED_LEFT, this.left() > 0)
+                    .setValue(RedstoneFunctionConverterBlock.POWERED_DOWN, this.down() > 0)
+                    .setValue(RedstoneFunctionConverterBlock.POWERED_RIGHT, this.right() > 0)
+                    .setValue(RedstoneFunctionConverterBlock.POWERED_UP, this.signal() > 0);
+            if (level != null) level.setBlock(getBlockPos(), blockState1, Block.UPDATE_ALL);
             this.setChanged();
         }
     }
 
+    public void readInputSignal(int[] arr) {
+        arr[0] = this.left;
+        arr[1] = this.down;
+        arr[2] = this.right;
+    }
+
+    public int left() {
+        return left;
+    }
+
+    public int down() {
+        return down;
+    }
+
+    public int right() {
+        return right;
+    }
 }

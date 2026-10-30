@@ -18,13 +18,26 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 
 public class RedstoneFunctionConverterBlock extends DiodeBlock implements EntityBlock {
 
+    public static final BooleanProperty POWERED_LEFT = BooleanProperty.create("powered_left");
+    public static final BooleanProperty POWERED_DOWN = BooleanProperty.create("powered_down");
+    public static final BooleanProperty POWERED_RIGHT = BooleanProperty.create("powered_right");
+    public static final BooleanProperty POWERED_UP = BooleanProperty.create("powered_up");
+
     protected RedstoneFunctionConverterBlock(Properties properties) {
         super(properties);
+
+        registerDefaultState(getStateDefinition().any()
+                .setValue(POWERED_LEFT, false)
+                .setValue(POWERED_DOWN, false)
+                .setValue(POWERED_RIGHT, false)
+                .setValue(POWERED_UP, false)
+        );
     }
 
     @Override
@@ -75,7 +88,7 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof RedstoneFunctionConverterBlockEntity eR) {
             if (!level.isClientSide()) eR.updateInputs(left, down, right);
-            eR.setChanged();
+            else eR.setChanged();
         }
         return Math.max(left, Math.max(down, right));
     }
@@ -108,7 +121,7 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, POWERED);
+        builder.add(FACING, POWERED, POWERED_LEFT, POWERED_DOWN, POWERED_RIGHT, POWERED_UP);
     }
 
 }
