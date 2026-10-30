@@ -25,7 +25,6 @@ public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
     private int signal = 0;
     private final RedstoneConverterModel MODEL;
     private int left = 0, down = 0, right = 0;
-    public boolean shouldTrain = false;
     private int ticksTraining = 0;
 
     public RedstoneFunctionConverterBlockEntity(BlockPos worldPosition, BlockState blockState) {
@@ -46,12 +45,12 @@ public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
         // eR.signal = (eR.signal+1)%16;
         // System.out.println("TICK: " + level + ", " + eR.signal);
         // eR.setChanged();
-        if (eR.shouldTrain && !level.isClientSide()) {
-            System.out.println(eR.MODEL.train());
+        if (blockState.getValue(RedstoneFunctionConverterBlock.IS_TRAINING) && !level.isClientSide()) {
+            double train = eR.MODEL.train();
             eR.ticksTraining = eR.ticksTraining + 1;
             if (eR.ticksTraining >= MAX_TRAINING_TIME) {
                 eR.ticksTraining = 0;
-                eR.shouldTrain = false;
+                level.setBlock(blockPos, blockState.setValue(RedstoneFunctionConverterBlock.IS_TRAINING, false), Block.UPDATE_ALL);
             }
             eR.signal = eR.MODEL.predict(eR.left,eR.down,eR.right);
             eR.setChanged();

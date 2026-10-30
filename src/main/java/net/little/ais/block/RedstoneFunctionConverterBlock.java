@@ -28,6 +28,7 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
     public static final BooleanProperty POWERED_DOWN = BooleanProperty.create("powered_down");
     public static final BooleanProperty POWERED_RIGHT = BooleanProperty.create("powered_right");
     public static final BooleanProperty POWERED_UP = BooleanProperty.create("powered_up");
+    public static final BooleanProperty IS_TRAINING = BooleanProperty.create("is_training");
 
     protected RedstoneFunctionConverterBlock(Properties properties) {
         super(properties);
@@ -37,6 +38,7 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
                 .setValue(POWERED_DOWN, false)
                 .setValue(POWERED_RIGHT, false)
                 .setValue(POWERED_UP, false)
+                .setValue(IS_TRAINING, false)
         );
     }
 
@@ -71,8 +73,9 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
         if (!player.isShiftKeyDown()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof RedstoneFunctionConverterBlockEntity eR) {
-                eR.shouldTrain = !eR.shouldTrain;
-                player.sendOverlayMessage(Component.literal("Converter is Learning: " + eR.shouldTrain));
+                BlockState blockState = state.setValue(IS_TRAINING, !state.getValue(IS_TRAINING));
+                level.setBlock(pos, blockState, Block.UPDATE_ALL);
+                player.sendOverlayMessage(Component.literal("Converter is Learning: " + blockState.getValue(IS_TRAINING)));
                 return InteractionResult.SUCCESS;
             }
             return InteractionResult.FAIL;
@@ -121,7 +124,7 @@ public class RedstoneFunctionConverterBlock extends DiodeBlock implements Entity
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, POWERED, POWERED_LEFT, POWERED_DOWN, POWERED_RIGHT, POWERED_UP);
+        builder.add(FACING, POWERED, POWERED_LEFT, POWERED_DOWN, POWERED_RIGHT, POWERED_UP, IS_TRAINING);
     }
 
 }
