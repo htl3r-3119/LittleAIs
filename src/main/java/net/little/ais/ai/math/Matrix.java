@@ -126,6 +126,10 @@ public class Matrix {
         System.arraycopy(vals, 0, this.vals, 0, vals.length);
     }
 
+    public void fill(Matrix m) {
+        System.arraycopy(m.vals, 0, this.vals, 0, m.vals.length);
+    }
+
     @Override
     public String toString() {
         StringBuilder strB = new StringBuilder();
