@@ -16,19 +16,19 @@ public class Matrix {
     }
 
     public double get(int r, int c) {
-        return this.vals[this.c*r+c];
+        return this.vals[this.c()*r+c];
     }
 
     public void set(int r, int c, double d) {
-        this.vals[r*this.c+c] = d;
+        this.vals[r*this.c()+c] = d;
     }
 
     public boolean fitForSimpleOp(Matrix other) {
-        return this.r == other.r && this.c == other.c;
+        return this.r() == other.r() && this.c() == other.c();
     }
 
     public boolean fitForMatMul(Matrix other) {
-        return this.c == other.r;
+        return this.c() == other.r();
     }
 
     public Matrix iterateSelf(Function<Double, Double> func) {
@@ -40,7 +40,7 @@ public class Matrix {
 
     @Override
     public Matrix clone() {
-        Matrix m = new Matrix(this.r, this.c);
+        Matrix m = new Matrix(this.r(), this.c());
         m.fill(this.vals);
         return m;
     }
@@ -66,16 +66,19 @@ public class Matrix {
             throw new RuntimeException(String.format("The dimensions don't fit (%d, %d) | (%d, %d)", this.r, this.c, other.r, other.c));
         }
         if (other instanceof BatchMatrix bm) {
-            for (int b = 0; b < bm.b; b++) {
-                int off = b*bm.r*bm.c;
-                for (int idx = 0; idx < this.vals.length; idx++) {
-                    this.vals[idx] = func.apply(this.vals[idx], other.vals[off+idx]);
+            for (int b = 0; b < bm.b(); b++) {
+                for (int r = 0; r < this.r(); r++) {
+                    for (int c = 0; c < this.c(); c++) {
+                        this.set(r,c,func.apply(this.get(r,c), bm.get(b,r,c)));
+                    }
                 }
             }
             return this;
         }
-        for (int idx = 0; idx < other.vals.length; idx++) {
-            this.vals[idx] = func.apply(this.vals[idx], other.vals[idx]);
+        for (int r = 0; r < this.r(); r++) {
+            for (int c = 0; c < this.c(); c++) {
+                this.set(r,c,func.apply(this.get(r,c), other.get(r,c)));
+            }
         }
         return this;
     }
@@ -85,12 +88,12 @@ public class Matrix {
             throw new RuntimeException("Dimensions don't fit matrix multiplication");
         }
         if (other instanceof BatchMatrix bm) {
-            BatchMatrix m = new BatchMatrix(bm.b, this.r, other.c);
-            for (int b = 0; b < m.b; b++) {
-                for (int i = 0; i < this.r; i++) {
-                    for (int j = 0; j < other.c; j++) {
+            BatchMatrix m = new BatchMatrix(bm.b(), this.r(), other.c());
+            for (int b = 0; b < m.b(); b++) {
+                for (int i = 0; i < this.r(); i++) {
+                    for (int j = 0; j < other.c(); j++) {
                         double sum = 0;
-                        for (int k = 0; k < this.c; k++) {
+                        for (int k = 0; k < this.c(); k++) {
                             sum += this.get(i,k) * bm.get(b,k,j);
                         }
                         m.set(b, i, j, sum);
@@ -99,11 +102,11 @@ public class Matrix {
             }
             return m;
         }
-        Matrix m = new Matrix(this.r, other.c);
-        for (int i = 0; i < this.r; i++) {
-            for (int j = 0; j < other.c; j++) {
+        Matrix m = new Matrix(this.r(), other.c());
+        for (int i = 0; i < this.r(); i++) {
+            for (int j = 0; j < other.c(); j++) {
                 double sum = 0;
-                for (int k = 0; k < this.c; k++) {
+                for (int k = 0; k < this.c(); k++) {
                     sum += this.get(i,k) * other.get(k,j);
                 }
                 m.set(i,j,sum);
@@ -113,9 +116,9 @@ public class Matrix {
     }
 
     public Matrix transpose() {
-        Matrix m = new Matrix(this.c, this.r);
-        for (int r = 0; r < this.r; r++) {
-            for (int c = 0; c < this.c; c++) {
+        Matrix m = new Matrix(this.c(), this.r());
+        for (int r = 0; r < this.r(); r++) {
+            for (int c = 0; c < this.c(); c++) {
                 m.set(c,r,this.get(r,c));
             }
         }
@@ -132,14 +135,14 @@ public class Matrix {
 
     @Override
     public String toString() {
-        StringBuilder strB = new StringBuilder();
+        StringBuilder strB = new StringBuilder(String.format("(%dx%d)", this.r(), this.c()));
         strB.append("{\n");
-        for (int r = 0; r < this.r; r++) {
+        for (int r = 0; r < this.r(); r++) {
             strB.append('[');
-            for (int c = 0; c < this.c-1; c++) {
+            for (int c = 0; c < this.c()-1; c++) {
                 strB.append(this.get(r,c)).append(", ");
             }
-            strB.append(this.get(r,this.c-1)).append("]\n");
+            strB.append(this.get(r,this.c()-1)).append("]\n");
         }
         strB.append("}");
         return strB.toString();
