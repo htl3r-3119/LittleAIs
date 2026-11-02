@@ -14,7 +14,7 @@ public class RedstoneSecurityModel {
     Layer model;
 
     public RedstoneSecurityModel() {
-        Conv2d conv2d = new Conv2d(32, 2,2, 28,28,1,1);
+        Conv2d conv2d = new Conv2d(32, 3,3, 28,28,1,1);
         Linear linear = new Linear(5408, 10);
 
         this.model = new Sequential(List.of(
@@ -26,10 +26,16 @@ public class RedstoneSecurityModel {
         ));
 
         try {
-            WeightLoader.loadWeight("");
-            System.out.println("LOADED!!!!");
+            double[] floats = WeightLoader.loadWeight("assets/little_ais/data/weight_0");
+            conv2d.getParams().getFirst().MATRIX.fill(floats);
+            double[] floats1 = WeightLoader.loadWeight("assets/little_ais/data/weight_1");
+            conv2d.getParams().getLast().MATRIX.fill(floats1);
+            double[] floats2 = WeightLoader.loadWeight("assets/little_ais/data/weight_2");
+            linear.getParams().getFirst().MATRIX.fill(floats2);
+            double[] floats3 = WeightLoader.loadWeight("assets/little_ais/data/weight_3");
+            linear.getParams().getLast().MATRIX.fill(floats3);
         } catch (IOException e) {
-            // throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
 
     }
