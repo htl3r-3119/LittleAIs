@@ -3,8 +3,11 @@ package net.little.ais;
 import net.fabricmc.api.ModInitializer;
 
 import net.little.ais.ai.model.StaticModel;
+import net.little.ais.block.ModBlocks;
+import net.little.ais.block.entity.ModBlockEntities;
 import net.little.ais.itemgroups.ModItemGroups;
 import net.little.ais.items.ModItems;
+import net.little.ais.network.ModPayloads;
 import net.minecraft.resources.Identifier;
 
 import org.slf4j.Logger;
@@ -29,6 +32,10 @@ public class LittleAIs implements ModInitializer {
 		ModItems.initialize();
 		ModItemGroups.initialize();
 		StaticModel.initialize();
+		ModBlocks.initialize();
+		ModBlockEntities.initialize();
+		ModPayloads.initialize();
+
 	}
 
 	public static Identifier id(String path) {
