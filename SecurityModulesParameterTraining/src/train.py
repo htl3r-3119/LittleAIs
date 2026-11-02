@@ -8,7 +8,7 @@ test_labels_path = Path("../res/t10k-labels.idx1-ubyte")
 train_images_path = Path("../res/train-images.idx3-ubyte")
 train_labels_path = Path("../res/train-labels.idx1-ubyte")
 
-save_path = Path("../out/params")
+save_path = Path("../out")
 
 
 def read_data(labels_path, images_path):
@@ -62,12 +62,6 @@ if __name__ == '__main__':
     labels_train, images_train = read_data(train_labels_path, train_images_path)
     labels_test, images_test = read_data(test_labels_path, test_images_path)
 
-    print(labels_train.shape)
-    print(images_train.shape)
-
-    print(labels_test.shape)
-    print(images_test.shape)
-
     model = Sequential([
         Conv2D(32, 3, activation='relu', input_shape=(28, 28, 1)),
         MaxPooling2D(2),
@@ -76,7 +70,12 @@ if __name__ == '__main__':
     ])
 
     model.compile(optimizer="adam", loss='categorical_crossentropy', metrics=['accuracy'])
-    # model.fit(images_train, labels_train, epochs=10, validation_data=(images_test, labels_test))
+    model.fit(images_train, labels_train, epochs=10, validation_data=(images_test, labels_test))
 
-    print(model.get_weights())
+    weights = model.get_weights()
+    print(weights)
+    for i, w in enumerate(weights):
+        with open(save_path / f"weight_{i}", "wb") as file:
+            file.write(w.astype(np.float32).tobytes())
+
 
