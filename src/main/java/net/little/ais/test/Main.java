@@ -21,9 +21,12 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Conv2d conv2d = new Conv2d(32, 2,2,28,28,1,1);
+        Conv2d conv2d = new Conv2d(32, 3,3,28,28,1,1);
         BatchMatrix m = new BatchMatrix(28,28,1);
         m.iterateSelf(_ -> Math.random());
+
+        System.out.println(conv2d.getParams().getFirst());
+        System.exit(0);
 
         MaxPool2d maxPool2d = new MaxPool2d(2);
         Flatten flatten = new Flatten();
