@@ -13,7 +13,7 @@ public class Flatten implements Layer {
         Matrix matrix = input.MATRIX;
         Matrix res;
         if (matrix instanceof BatchMatrix bm) {
-            res = new BatchMatrix(bm.b(), 1, bm.r()*bm.c());
+            res = new Matrix(1,bm.r()*bm.c()*bm.b());
         } else {
             res = new Matrix(1, matrix.r()*matrix.c());
         }

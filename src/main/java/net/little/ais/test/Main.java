@@ -1,5 +1,6 @@
 package net.little.ais.test;
 
+import net.little.ais.ai.byteio.WeightLoader;
 import net.little.ais.ai.layer.*;
 import net.little.ais.ai.loss.CrossEntropy;
 import net.little.ais.ai.loss.Loss;
@@ -13,37 +14,25 @@ import net.little.ais.ai.opt.SGD;
 import net.little.ais.ai.tensor.CrossEntropyTensor;
 import net.little.ais.ai.tensor.Tensor;
 
+import java.io.IOException;
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        Conv2d conv2d = new Conv2d(32, 2,2,4,4,1,1);
-        BatchMatrix m = new BatchMatrix(4,4,2);
-        m.fill(
-                1,9,
-                5,3,
-                2,7,
-                8,1,
-                4,2,
-                3,8,
-                6,4,
-                7,5,
-                7,6,
-                2,1,
-                9,3,
-                1,8,
-                5,4,
-                6,7,
-                3,2,
-                4,9
-        );
+        Conv2d conv2d = new Conv2d(32, 2,2,28,28,1,1);
+        BatchMatrix m = new BatchMatrix(28,28,1);
+        m.iterateSelf(_ -> Math.random());
+
         MaxPool2d maxPool2d = new MaxPool2d(2);
         Flatten flatten = new Flatten();
+        Tensor conOut = conv2d.forward(new Tensor(m));
+        // System.out.println(conOut);
+        Tensor poolOut = maxPool2d.forward(conOut);
+        Tensor flat = flatten.forward(poolOut);
+        System.out.println(flat);
 
-        System.out.println(m);
-        System.out.println(maxPool2d.forward(new Tensor(m)));
         System.exit(0);
 
         Tensor forward = conv2d.forward(new Tensor(m));

@@ -2,6 +2,7 @@ package net.little.ais;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.little.ais.ai.model.StaticModel;
 import net.little.ais.itemgroups.ModItemGroups;
 import net.little.ais.items.ModItems;
 import net.minecraft.resources.Identifier;
@@ -27,6 +28,7 @@ public class LittleAIs implements ModInitializer {
 
 		ModItems.initialize();
 		ModItemGroups.initialize();
+		StaticModel.initialize();
 	}
 
 	public static Identifier id(String path) {
