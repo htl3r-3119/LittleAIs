@@ -25,6 +25,14 @@ public class ModBlocks {
             BlockBehaviour.Properties.of().instabreak().sound(SoundType.COPPER_BULB).pushReaction(PushReaction.POPPED)
     );
 
+    public static final Block REDSTONE_SECURITY_MODULE_BLOCK = register(
+            create("redstone_security_module"),
+            RedstoneSecurityBlock::new,
+            BlockBehaviour.Properties.of()
+                    .isRedstoneConductor((state, level, pos) -> false)
+                    .pushReaction(PushReaction.IMMOVEABLE)
+    );
+
     public static void initialize() {
         LittleAIs.LOGGER.info("Initializing Blocks");
     }

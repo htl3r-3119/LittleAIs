@@ -18,6 +18,12 @@ public class ModBlockEntities {
             ModBlocks.REDSTONE_FUNCTION_CONVERTER_BLOCK
     );
 
+    public static final BlockEntityType<RedstoneSecurityBlockEntity> REDSTONE_SECURITY_BLOCK_ENTITY_TYPE = register(
+            "redstone_security_module",
+            RedstoneSecurityBlockEntity::new,
+            ModBlocks.REDSTONE_SECURITY_MODULE_BLOCK
+    );
+
     public static void initialize() {
         LittleAIs.LOGGER.info("Initializing BlockEntities");
     }

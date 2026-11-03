@@ -24,9 +24,8 @@ public class ModItemGroups {
             .icon(() -> new ItemStack(Items.REDSTONE))
             .title(Component.translatable("creativeTab.little.ais"))
             .displayItems((parameters, output) -> {
-                output.accept(Items.COMPARATOR);
-                output.accept(Items.REPEATER);
                 output.accept(ModBlocks.REDSTONE_FUNCTION_CONVERTER_BLOCK.asItem());
+                output.accept(ModBlocks.REDSTONE_SECURITY_MODULE_BLOCK.asItem());
             })
             .build();
 
