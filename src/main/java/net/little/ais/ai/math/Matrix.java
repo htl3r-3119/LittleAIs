@@ -182,4 +182,8 @@ public class Matrix {
         }
         return idx;
     }
+
+    public int size() {
+        return this.vals.length;
+    }
 }

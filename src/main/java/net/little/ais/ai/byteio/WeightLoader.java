@@ -28,10 +28,10 @@ public final class WeightLoader {
     }
 
     private static float readFloat(byte[] arr, int start) {
-        int i = arr[start];
-        for (int j = 1; j < Float.BYTES; j++) {
+        int i = arr[start+Float.BYTES-1];
+        for (int j = Float.BYTES-1; j > 0; j--) {
             i <<= 8;
-            i += arr[start+j];
+            i |= arr[start+j]&255;
         }
         return Float.intBitsToFloat(i);
     }

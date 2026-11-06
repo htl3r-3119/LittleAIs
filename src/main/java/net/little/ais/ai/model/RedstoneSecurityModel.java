@@ -15,25 +15,44 @@ public class RedstoneSecurityModel {
 
     public RedstoneSecurityModel() {
         Conv2d conv2d = new Conv2d(32, 3,3, 28,28,1,1);
-        Linear linear = new Linear(5408, 10);
+        Linear linear1 = new Linear(5408, 128);
+        Linear linear2 = new Linear(128,10);
 
         this.model = new Sequential(List.of(
                 conv2d,
                 new Relu(),
                 new MaxPool2d(2),
                 new Flatten(),
-                linear
+                linear1,
+                new Relu(),
+                linear2
         ));
 
         try {
+            // Conv2d
             double[] floats = WeightLoader.loadWeight("assets/little_ais/data/weight_0");
-            conv2d.getParams().getFirst().MATRIX.fill(floats);
+            List<Tensor> params = conv2d.getParams();
+            assert floats.length == params.getFirst().MATRIX.size();
+            params.getFirst().MATRIX.fill(floats);
             double[] floats1 = WeightLoader.loadWeight("assets/little_ais/data/weight_1");
-            conv2d.getParams().getLast().MATRIX.fill(floats1);
+            assert floats1.length == params.getLast().MATRIX.size();
+            params.getLast().MATRIX.fill(floats1);
+            // Linear 1
+            params = linear1.getParams();
             double[] floats2 = WeightLoader.loadWeight("assets/little_ais/data/weight_2");
-            linear.getParams().getFirst().MATRIX.fill(floats2);
+            assert floats2.length == params.getFirst().MATRIX.size();
+            params.getFirst().MATRIX.fill(floats2);
             double[] floats3 = WeightLoader.loadWeight("assets/little_ais/data/weight_3");
-            linear.getParams().getLast().MATRIX.fill(floats3);
+            assert floats3.length == params.getLast().MATRIX.size();
+            params.getLast().MATRIX.fill(floats3);
+            // Linear 2
+            params = linear2.getParams();
+            double[] floats4 = WeightLoader.loadWeight("assets/little_ais/data/weight_4");
+            assert floats4.length == params.getFirst().MATRIX.size();
+            linear2.getParams().getFirst().MATRIX.fill(floats4);
+            double[] floats5 = WeightLoader.loadWeight("assets/little_ais/data/weight_5");
+            assert floats5.length == params.getLast().MATRIX.size();
+            linear2.getParams().getLast().MATRIX.fill(floats5);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

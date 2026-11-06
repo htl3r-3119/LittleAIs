@@ -1,6 +1,6 @@
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 from pathlib import Path
 
 test_images_path = Path("../res/t10k-images.idx3-ubyte")
@@ -66,11 +66,12 @@ if __name__ == '__main__':
         Conv2D(32, 3, activation='relu', input_shape=(28, 28, 1)),
         MaxPooling2D(2),
         Flatten(),
+        Dense(128, activation='relu'),
         Dense(10, activation='softmax')
     ])
 
     model.compile(optimizer="adam", loss='categorical_crossentropy', metrics=['accuracy'])
-    model.fit(images_train, labels_train, epochs=10, validation_data=(images_test, labels_test))
+    model.fit(x=images_train, y=labels_train, epochs=20, batch_size=16, validation_data=(images_test, labels_test))
 
     weights = model.get_weights()
     print(weights)
