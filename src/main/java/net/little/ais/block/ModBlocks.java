@@ -9,8 +9,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.ComparatorBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.PushReaction;
@@ -27,7 +25,7 @@ public class ModBlocks {
 
     public static final Block REDSTONE_SECURITY_MODULE_BLOCK = register(
             create("redstone_security_module"),
-            RedstoneSecurityBlock::new,
+            RedstoneSecurityModuleBlock::new,
             BlockBehaviour.Properties.of()
                     .isRedstoneConductor((state, level, pos) -> false)
                     .pushReaction(PushReaction.IMMOVEABLE)

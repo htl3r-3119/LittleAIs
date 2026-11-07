@@ -18,6 +18,7 @@ public class ModEvents {
     public static void initialize() {
         UseBlockCallback.EVENT.register((player, level, hand, hitResult) -> {
             ItemStack itemInHand = player.getItemInHand(hand);
+            System.out.println("USE ITEM");
             if (!(level.isClientSide() && player.isShiftKeyDown() && itemInHand.isEmpty())) return InteractionResult.PASS;
             BlockState blockState = level.getBlockState(hitResult.getBlockPos());
             if (blockState.is(ModBlocks.REDSTONE_FUNCTION_CONVERTER_BLOCK)) {

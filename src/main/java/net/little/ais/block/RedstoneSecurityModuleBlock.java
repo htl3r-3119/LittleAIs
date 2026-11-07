@@ -2,10 +2,12 @@ package net.little.ais.block;
 
 import net.little.ais.block.entity.RedstoneSecurityBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -17,11 +19,11 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.jspecify.annotations.Nullable;
 
-public class RedstoneSecurityBlock extends HorizontalDirectionalBlock implements EntityBlock {
+public class RedstoneSecurityModuleBlock extends HorizontalDirectionalBlock implements EntityBlock {
 
     public static final BooleanProperty POWERED;
 
-    protected RedstoneSecurityBlock(Properties properties) {
+    protected RedstoneSecurityModuleBlock(Properties properties) {
         super(properties);
     }
 
@@ -55,4 +57,14 @@ public class RedstoneSecurityBlock extends HorizontalDirectionalBlock implements
         }
     }
 
+    @Override
+    public BlockState getStateForPlacement(final BlockPlaceContext context) {
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    protected boolean shouldRedstoneWireConnectTo(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
+        if (direction == null) return false;
+        return state.getValue(FACING) == direction;
+    }
 }
