@@ -1,19 +1,29 @@
 package net.little.ais.client.gui.screen;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.little.ais.block.entity.RedstoneSecurityBlockEntity;
 import net.little.ais.client.gui.widget.CanvasWidget;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.little.ais.network.RedstoneSecurityModuleCheckPayload;
+import net.little.ais.network.RedstoneSecurityModulePayload;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.FittingMultiLineTextWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+
+import java.util.UUID;
 
 public class RedstoneSecurityModuleScreen extends Screen {
 
     RedstoneSecurityBlockEntity en;
+    UUID owner;
+    FittingMultiLineTextWidget prediction;
+    CanvasWidget canvas;
 
-    public RedstoneSecurityModuleScreen(Component title, RedstoneSecurityBlockEntity entity) {
+    public RedstoneSecurityModuleScreen(Component title, RedstoneSecurityBlockEntity entity, UUID owner) {
         super(title);
         this.en = entity;
+        this.owner = owner;
     }
 
     @Override
@@ -27,25 +37,86 @@ public class RedstoneSecurityModuleScreen extends Screen {
         int x = this.width/2-S/2;
         int y = this.height/2-S/2;
 
-        CanvasWidget canvas = new CanvasWidget(x, y, S, S, Component.literal("test"));
-        this.addRenderableWidget(canvas);
+        this.canvas = new CanvasWidget(x, y, S, S, Component.literal("canvas"));
+        this.addRenderableWidget(this.canvas);
 
-        int bw = 120;
-        int bh = 20;
-        int bx = canvas.getX()+canvas.getWidth()/2-bw/2;
-        int by = canvas.getY()+canvas.getHeight()+1;
+        Button sendButton;
 
-        Button testButton = Button.builder(Component.literal("test"), button -> {
-            canvas.test();
-        }).bounds(bx,by,bw,bh).build();
+        if (this.en.isOwnedBy(this.owner)) {
 
-        this.addRenderableWidget(testButton);
+            int startX = this.canvas.getX();
+            int startY = this.canvas.getY()+this.canvas.getHeight();
+
+            int bottomWidgetWidth = S/3;
+            int bottomWidgetHeight = 20;
+
+            sendButton = Button.builder(
+                    Component.literal("send"),
+                    this::send
+            ).bounds(startX,startY,bottomWidgetWidth,bottomWidgetHeight).build();
+
+            Button config = Button.builder(
+                    Component.literal("config"),
+                    this::config
+            ).bounds(startX+bottomWidgetWidth,startY,bottomWidgetWidth,bottomWidgetHeight).build();
+
+            this.prediction = new FittingMultiLineTextWidget(
+                    startX+2*bottomWidgetWidth,startY,
+                    bottomWidgetWidth,bottomWidgetHeight,
+                    Component.literal(""),
+                    Minecraft.getInstance().font
+            );
+            this.prediction.setSize(bottomWidgetWidth,bottomWidgetHeight);
+
+            this.addRenderableWidget(sendButton);
+            this.addRenderableWidget(config);
+            this.addRenderableWidget(this.prediction);
+
+        } else {
+            int startX = this.canvas.getX();
+            int startY = this.canvas.getY()+this.canvas.getHeight();
+
+            int bottomWidgetWidth = S/2;
+            int bottomWidgetHeight = 20;
+
+            sendButton = Button.builder(
+                    Component.literal("send"),
+                    this::send
+            ).bounds(startX,startY,bottomWidgetWidth,bottomWidgetHeight).build();
+
+            this.prediction = new FittingMultiLineTextWidget(
+                    startX+bottomWidgetWidth,startY,
+                    bottomWidgetWidth,bottomWidgetHeight,
+                    Component.literal(""),
+                    Minecraft.getInstance().font
+            );
+            this.prediction.setSize(bottomWidgetWidth,bottomWidgetHeight);
+
+            this.addRenderableWidget(sendButton);
+            this.addRenderableWidget(this.prediction);
+        }
 
     }
 
-    @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        super.extractRenderState(graphics, mouseX, mouseY, a);
+    private void send(Button button) {
+        int pred = this.canvas.pred();
+        this.prediction.setMessage(Component.literal(String.valueOf(pred)));
+        ClientPlayNetworking.send(
+                new RedstoneSecurityModuleCheckPayload(
+                        this.en.getBlockPos(),
+                        pred
+                )
+        );
+    }
+
+    private void config(Button button) {
+        ClientPlayNetworking.send(
+                new RedstoneSecurityModulePayload(
+                        this.en.getBlockPos(),
+                        this.en.getOwner().toString(),
+                        this.canvas.pred()
+                )
+        );
     }
 
 }

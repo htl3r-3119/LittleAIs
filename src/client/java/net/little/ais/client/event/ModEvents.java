@@ -1,7 +1,6 @@
 package net.little.ais.client.event;
 
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.little.ais.block.ModBlocks;
 import net.little.ais.block.entity.RedstoneFunctionConverterBlockEntity;
 import net.little.ais.block.entity.RedstoneSecurityBlockEntity;
@@ -18,18 +17,23 @@ public class ModEvents {
     public static void initialize() {
         UseBlockCallback.EVENT.register((player, level, hand, hitResult) -> {
             ItemStack itemInHand = player.getItemInHand(hand);
-            System.out.println("USE ITEM");
-            if (!(level.isClientSide() && player.isShiftKeyDown() && itemInHand.isEmpty())) return InteractionResult.PASS;
+            if (!level.isClientSide()) return InteractionResult.PASS;
             BlockState blockState = level.getBlockState(hitResult.getBlockPos());
             if (blockState.is(ModBlocks.REDSTONE_FUNCTION_CONVERTER_BLOCK)) {
+                if (!(player.isShiftKeyDown() && itemInHand.isEmpty())) return InteractionResult.PASS;
                 Minecraft.getInstance().gui.setScreen(
                         new RedstoneFunctionConverterScreen(Component.empty(), (RedstoneFunctionConverterBlockEntity) level.getBlockEntity(hitResult.getBlockPos()))
                 );
                 return InteractionResult.SUCCESS;
             }
             else if (blockState.is(ModBlocks.REDSTONE_SECURITY_MODULE_BLOCK)) {
+                if (!itemInHand.isEmpty()) return InteractionResult.PASS;
                 Minecraft.getInstance().gui.setScreen(
-                        new RedstoneSecurityModuleScreen(Component.empty(), (RedstoneSecurityBlockEntity) level.getBlockEntity(hitResult.getBlockPos()))
+                        new RedstoneSecurityModuleScreen(
+                                Component.empty(),
+                                (RedstoneSecurityBlockEntity) level.getBlockEntity(hitResult.getBlockPos()),
+                                player.getUUID()
+                        )
                 );
             }
             return InteractionResult.PASS;

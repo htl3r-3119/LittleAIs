@@ -3,6 +3,8 @@ package net.little.ais.block;
 import net.little.ais.block.entity.RedstoneSecurityBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -22,9 +24,15 @@ import org.jspecify.annotations.Nullable;
 public class RedstoneSecurityModuleBlock extends HorizontalDirectionalBlock implements EntityBlock {
 
     public static final BooleanProperty POWERED;
+    public static final int TICK_DELAY = 20;
 
     protected RedstoneSecurityModuleBlock(Properties properties) {
         super(properties);
+
+        registerDefaultState(
+                getStateDefinition().any()
+                .setValue(POWERED, false)
+        );
     }
 
     @Override
@@ -67,4 +75,25 @@ public class RedstoneSecurityModuleBlock extends HorizontalDirectionalBlock impl
         if (direction == null) return false;
         return state.getValue(FACING) == direction;
     }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        super.tick(state, level, pos, random);
+        BlockState blockState = level.getBlockState(pos);
+        level.setBlock(pos, blockState.setValue(POWERED, false), Block.UPDATE_ALL);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (!(blockEntity instanceof RedstoneSecurityBlockEntity rS)) return;
+        rS.setSignalStrength(1);
+    }
+
+    @Override
+    protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+        if (state.getValue(POWERED) && state.getValue(FACING) == direction) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (!(blockEntity instanceof RedstoneSecurityBlockEntity rS)) return 0;
+            return rS.getSignalStrength();
+        }
+        return 0;
+    }
+
 }

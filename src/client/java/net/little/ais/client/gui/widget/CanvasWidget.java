@@ -16,10 +16,9 @@ import java.awt.*;
 public class CanvasWidget extends AbstractWidget {
 
     private static final int BRUSH_RADIUS = 1;
+    private static final double alpha = 1;
 
     BatchMatrix pixel = new BatchMatrix(28,28,1);
-
-    int color = 255;
 
     boolean isDrawing;
 
@@ -86,7 +85,7 @@ public class CanvasWidget extends AbstractWidget {
     }
 
     private void paintPixel(int x, int y, int color) {
-        this.pixel.set(y,x,0, Math.min(255,this.pixel.get(y,x,0)+color));
+        this.pixel.set(y,x,0, Math.min(255, (color+this.pixel.get(y,x,0))*alpha + this.pixel.get(y,x,0)*(1-alpha)));
     }
 
     @Override
@@ -191,11 +190,9 @@ public class CanvasWidget extends AbstractWidget {
         }
     }
 
-    public void test() {
+    public int pred() {
         Matrix matrix = this.pixel.clone().iterateSelf(x -> x / 255.);
-        System.out.println(matrix);
-        int predict = StaticModel.REDSTONE_SECURITY_MODEL.predict(new Tensor(matrix));
-        System.out.println(predict);
+        return StaticModel.REDSTONE_SECURITY_MODEL.predict(new Tensor(matrix));
     }
 
 }
