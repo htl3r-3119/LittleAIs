@@ -6,11 +6,14 @@ import net.little.ais.client.gui.widget.CanvasWidget;
 import net.little.ais.network.RedstoneSecurityModuleCheckPayload;
 import net.little.ais.network.RedstoneSecurityModulePayload;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.FittingMultiLineTextWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class RedstoneSecurityModuleScreen extends Screen {
@@ -18,6 +21,7 @@ public class RedstoneSecurityModuleScreen extends Screen {
     RedstoneSecurityBlockEntity en;
     UUID owner;
     FittingMultiLineTextWidget prediction;
+    FittingMultiLineTextWidget test;
     CanvasWidget canvas;
 
     public RedstoneSecurityModuleScreen(Component title, RedstoneSecurityBlockEntity entity, UUID owner) {
@@ -40,62 +44,66 @@ public class RedstoneSecurityModuleScreen extends Screen {
         this.canvas = new CanvasWidget(x, y, S, S, Component.literal("canvas"));
         this.addRenderableWidget(this.canvas);
 
-        Button sendButton;
+        int startX = this.canvas.getX();
+        int startY = this.canvas.getY()+this.canvas.getHeight();
 
-        if (this.en.isOwnedBy(this.owner)) {
+        // Tool Test    Prediction
+        // Send Config  /
 
-            int startX = this.canvas.getX();
-            int startY = this.canvas.getY()+this.canvas.getHeight();
+        int topWidgetWidth = S/3;
+        int topWidgetHeight = 20;
 
-            int bottomWidgetWidth = S/3;
-            int bottomWidgetHeight = 20;
+        Button tool = Button.builder(Component.literal("eraser"), this::switchTool).bounds(
+                startX,startY,
+                topWidgetWidth,topWidgetHeight
+        ).build();
 
-            sendButton = Button.builder(
-                    Component.literal("send"),
-                    this::send
-            ).bounds(startX,startY,bottomWidgetWidth,bottomWidgetHeight).build();
+        Button test = Button.builder(Component.literal("test"), _ -> {
+            int pred = this.canvas.pred();
+            this.prediction.setMessage(Component.literal(String.valueOf(pred)));
+        }).bounds(
+                startX+topWidgetWidth,startY,
+                topWidgetWidth,topWidgetHeight
+        ).build();
 
-            Button config = Button.builder(
-                    Component.literal("config"),
-                    this::config
-            ).bounds(startX+bottomWidgetWidth,startY,bottomWidgetWidth,bottomWidgetHeight).build();
+        this.prediction = new FittingMultiLineTextWidget(
+                startX+2*topWidgetWidth,startY,
+                topWidgetWidth,topWidgetHeight,
+                Component.literal(""),
+                Minecraft.getInstance().font
+        );
+        this.prediction.setSize(topWidgetWidth,topWidgetHeight);
 
-            this.prediction = new FittingMultiLineTextWidget(
-                    startX+2*bottomWidgetWidth,startY,
-                    bottomWidgetWidth,bottomWidgetHeight,
-                    Component.literal(""),
-                    Minecraft.getInstance().font
-            );
-            this.prediction.setSize(bottomWidgetWidth,bottomWidgetHeight);
+        startY+=topWidgetHeight;
 
-            this.addRenderableWidget(sendButton);
-            this.addRenderableWidget(config);
-            this.addRenderableWidget(this.prediction);
+        int bottomWidgetWidth = S/2;
+        int bottomWidgetHeight = 20;
 
-        } else {
-            int startX = this.canvas.getX();
-            int startY = this.canvas.getY()+this.canvas.getHeight();
+        Button sendButton = Button.builder(
+                Component.literal("send"),
+                this::send
+        ).bounds(startX,startY,bottomWidgetWidth,bottomWidgetHeight).build();
 
-            int bottomWidgetWidth = S/2;
-            int bottomWidgetHeight = 20;
+        Button config = Button.builder(
+                Component.literal("config"),
+                this::config
+        ).bounds(startX+bottomWidgetWidth,startY,bottomWidgetWidth,bottomWidgetHeight).build();
 
-            sendButton = Button.builder(
-                    Component.literal("send"),
-                    this::send
-            ).bounds(startX,startY,bottomWidgetWidth,bottomWidgetHeight).build();
+        this.addRenderableWidget(test);
+        this.addRenderableWidget(tool);
+        this.addRenderableWidget(sendButton);
+        this.addRenderableWidget(config);
+        this.addRenderableWidget(this.prediction);
+    }
 
-            this.prediction = new FittingMultiLineTextWidget(
-                    startX+bottomWidgetWidth,startY,
-                    bottomWidgetWidth,bottomWidgetHeight,
-                    Component.literal(""),
-                    Minecraft.getInstance().font
-            );
-            this.prediction.setSize(bottomWidgetWidth,bottomWidgetHeight);
-
-            this.addRenderableWidget(sendButton);
-            this.addRenderableWidget(this.prediction);
+    private void switchTool(Button b) {
+        Component message = b.getMessage();
+        if (message.toString().contains("brush")) {
+            b.setMessage(Component.literal("eraser"));
         }
-
+        else b.setMessage(Component.literal("brush"));
+        System.out.println(b.getMessage());
+        this.canvas.color = this.canvas.color == 255 ? -255 : 255;
     }
 
     private void send(Button button) {

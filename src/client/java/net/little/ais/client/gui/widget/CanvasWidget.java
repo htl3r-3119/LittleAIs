@@ -7,7 +7,6 @@ import net.little.ais.ai.tensor.Tensor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
@@ -17,6 +16,7 @@ public class CanvasWidget extends AbstractWidget {
 
     private static final int BRUSH_RADIUS = 1;
     private static final double alpha = 1;
+    public int color = 255;
 
     BatchMatrix pixel = new BatchMatrix(28,28,1);
 
@@ -46,20 +46,6 @@ public class CanvasWidget extends AbstractWidget {
                 );
             }
         }
-        /*
-        int xl = toCanvasPixel(this.width/2.);
-        int yl = toCanvasPixel(this.height/2.);
-        int xl1 = toCanvasPixel(mouseX-getX());
-        int yl1 = toCanvasPixel(mouseY-getY());
-
-        drawLine(
-                xl,
-                yl,
-                xl1,
-                yl1
-        );
-
-         */
 
         graphics.disableScissor();
     }
@@ -85,7 +71,7 @@ public class CanvasWidget extends AbstractWidget {
     }
 
     private void paintPixel(int x, int y, int color) {
-        this.pixel.set(y,x,0, Math.min(255, (color+this.pixel.get(y,x,0))*alpha + this.pixel.get(y,x,0)*(1-alpha)));
+        this.pixel.set(y,x,0, Math.min(255, Math.max(0,(color+this.pixel.get(y,x,0))*alpha + this.pixel.get(y,x,0)*(1-alpha))));
     }
 
     @Override
@@ -102,7 +88,7 @@ public class CanvasWidget extends AbstractWidget {
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         if (event.button() == 0) {
-            isDrawing = false;
+            this.isDrawing = false;
             return true;
         }
         return false;
@@ -140,7 +126,7 @@ public class CanvasWidget extends AbstractWidget {
 
                     if (coverage <= 0) continue;
 
-                    int color = (int)(Math.round(255 * coverage));
+                    int color = (int)(Math.round(this.color * coverage));
 
                     paintPixel(
                             nextX,
