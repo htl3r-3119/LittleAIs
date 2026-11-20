@@ -5,6 +5,7 @@ import net.fabricmc.api.ModInitializer;
 import net.little.ais.ai.model.StaticModel;
 import net.little.ais.block.ModBlocks;
 import net.little.ais.block.entity.ModBlockEntities;
+import net.little.ais.commands.ModCommands;
 import net.little.ais.itemgroups.ModItemGroups;
 import net.little.ais.items.ModItems;
 import net.little.ais.network.ModPayloads;
@@ -35,6 +36,7 @@ public class LittleAIs implements ModInitializer {
 		ModBlocks.initialize();
 		ModBlockEntities.initialize();
 		ModPayloads.initialize();
+		ModCommands.initialize();
 
 	}
 

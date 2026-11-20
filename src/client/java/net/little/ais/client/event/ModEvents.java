@@ -1,11 +1,14 @@
 package net.little.ais.client.event;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.little.ais.block.ModBlocks;
 import net.little.ais.block.entity.RedstoneFunctionConverterBlockEntity;
 import net.little.ais.block.entity.RedstoneSecurityBlockEntity;
 import net.little.ais.client.gui.screen.RedstoneFunctionConverterScreen;
 import net.little.ais.client.gui.screen.RedstoneSecurityModuleScreen;
+import net.little.ais.client.gui.screen.game.GameSettingsScreen;
+import net.little.ais.network.DrawingGameOpenSettingsPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -38,6 +41,13 @@ public class ModEvents {
             }
             return InteractionResult.PASS;
         });
+
+        ClientPlayNetworking.registerGlobalReceiver(
+                DrawingGameOpenSettingsPayload.TYPE,
+                (payload, context) -> {
+                    Minecraft.getInstance().setScreenAndShow(new GameSettingsScreen());
+                }
+        );
 
     }
 

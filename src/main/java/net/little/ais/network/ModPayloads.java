@@ -14,6 +14,12 @@ import java.util.UUID;
 public class ModPayloads {
 
     public static void initialize() {
+
+        PayloadTypeRegistry.clientboundPlay().register(
+                DrawingGameOpenSettingsPayload.TYPE,
+                DrawingGameOpenSettingsPayload.CODEC
+        );
+
         PayloadTypeRegistry.serverboundPlay().register(
                 RedstoneFunctionConverterPayload.TYPE,
                 RedstoneFunctionConverterPayload.CODEC

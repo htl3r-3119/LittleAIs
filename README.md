@@ -53,8 +53,8 @@ As a player who’s chronically bored,
 who sometimes finds Minecraft a bit too taxing or just needs a break to clear my head, I’d like to have a little casual game that I can play either on my own or in multiplayer with friends without having to switch to another game.
 
 Acceptance criteria
-- The Game has a GUI. The Game starts by the player issuing a command, with up to 6 players
-- Using a command parameter the games duration can be set between 3 - 6 rounds
+- The game has a GUI. The game starts by the player issuing a command, with up to 6 players
+- The player can send invites to other players and configure game settings in the GUI
 - The GUI shows a list of participating players
 - The GUI features a drawing area where the active player can draw the given word. The other players can try to guess the word using a text input field. The quicker they manage to do so, the more points they and the player drawing the word receive.
 - Both offline and online, a bot is part of the game
