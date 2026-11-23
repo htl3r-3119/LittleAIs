@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -52,6 +53,10 @@ public class GameSettingsScreen extends Screen {
     private GameSettingsScreen(Component c, PageType p) {
         super(c);
         this.pageType = p;
+    }
+
+    private boolean checkedAllRequired() {
+        return this.editBoxes.stream().mapToInt(value -> value.getValue().isEmpty() ? 0 : 1).min().orElse(0) == 1;
     }
 
     @Override
@@ -102,6 +107,16 @@ public class GameSettingsScreen extends Screen {
         Button button = Button.builder(
                 Component.literal(this.pageType == PageType.INITIAL ? "Continue" : "Send Invites"),
                 _ -> {
+                    if (!checkedAllRequired()) {
+                        this.minecraft.gui.toastManager().addToast(
+                                new SystemToast(
+                                        SystemToast.SystemToastId.NARRATOR_TOGGLE,
+                                        Component.nullToEmpty("Can't continue yet"),
+                                        Component.nullToEmpty("Fill in all fields")
+                                )
+                        );
+                        return;
+                    }
                     Screen screen;
                     if (this.pageType == PageType.INITIAL) {
                         if (this.getNumPlayers() == 1) {
