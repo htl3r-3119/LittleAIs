@@ -54,9 +54,7 @@ public class RedstoneFunctionConverterScreen extends Screen {
                     entries.save();
                     this.entity.setChanged();
                     Minecraft.getInstance().setScreenAndShow(null);
-                    ClientPlayNetworking.send(new RedstoneFunctionConverterPayload(this.entity.getData()));
-                    System.out.println(this.entity);
-                    System.out.println(this.entity.getData());
+                    ClientPlayNetworking.send(new RedstoneFunctionConverterPayload(this.entity.getBlockPos(), this.entity.getData()));
                 }
         ).bounds(
                 this.width/2-buttonSpace/2, this.height/2+HEIGHT/2+buttonGap,

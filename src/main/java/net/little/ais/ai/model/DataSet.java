@@ -1,5 +1,10 @@
 package net.little.ais.ai.model;
 
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.sun.jna.platform.win32.Variant;
 import io.netty.buffer.ByteBuf;
 import net.little.ais.ai.math.BatchMatrix;
 import net.little.ais.ai.tensor.Tensor;
@@ -8,14 +13,43 @@ import net.minecraft.network.codec.StreamCodec;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DataSet implements Iterable<Map.Entry<DataSet.Input, Integer>> {
+
+    public static final Codec<Input> INPUT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.fieldOf("a").forGetter(Input::a),
+            Codec.INT.fieldOf("b").forGetter(Input::b),
+            Codec.INT.fieldOf("c").forGetter(Input::c)
+            ).apply(instance, Input::new)
+    );
+
+    public static final Codec<Pair<Input, Integer>> ENTRY_CODEC = Codec.pair(
+            INPUT_CODEC.fieldOf("key").codec(),
+            Codec.INT.fieldOf("value").codec()
+    );
+
+    public static final Codec<DataSet> CODEC = RecordCodecBuilder.create(
+            dataSetInstance -> dataSetInstance.group(
+                    ENTRY_CODEC.listOf().fieldOf("data").forGetter(entries -> entries.entries().stream().map(inputIntegerEntry -> Pair.of(inputIntegerEntry.getKey(), inputIntegerEntry.getValue())).toList())
+            ).apply(dataSetInstance, pairs -> {
+                Map<Input, Integer> collect = pairs.stream().collect(Collectors.toMap(
+                        Pair::getFirst,
+                        Pair::getSecond
+                ));
+                return new DataSet(collect);
+            })
+    );
+
+    private Map<Input, Integer> table() {
+        return this.TABLE;
+    }
 
     private static StreamCodec<ByteBuf, List<Integer>> LIST_CODEC = ByteBufCodecs.VAR_INT.apply(
             ByteBufCodecs.list()
     );
 
-    public static StreamCodec<ByteBuf, DataSet> CODEC = StreamCodec.of(
+    public static StreamCodec<ByteBuf, DataSet> STREAM_CODEC = StreamCodec.of(
             (output, value) -> {
                 List<Integer> list = value.TABLE.entrySet().stream().map(e -> List.of(e.getKey().a, e.getKey().b, e.getKey().c, e.getValue())).flatMap(List::stream).toList();
                 LIST_CODEC.encode(output, list);
@@ -54,6 +88,10 @@ public class DataSet implements Iterable<Map.Entry<DataSet.Input, Integer>> {
         this.TABLE.clear();
     }
 
+    public void fill(DataSet entries) {
+        this.TABLE.putAll(entries.TABLE);
+    }
+
     public static record Input(int a, int b, int c) {}
 
     HashMap<Input, Integer> TABLE;
@@ -64,6 +102,10 @@ public class DataSet implements Iterable<Map.Entry<DataSet.Input, Integer>> {
 
     private DataSet(Map<Input, Integer> entries) {
         this.TABLE = new HashMap<>(entries);
+    }
+
+    public Set<Input> keys() {
+        return this.TABLE.keySet();
     }
 
     public void add(int a, int b, int c, int t) {

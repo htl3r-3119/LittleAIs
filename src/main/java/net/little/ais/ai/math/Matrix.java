@@ -1,15 +1,35 @@
 package net.little.ais.ai.math;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class Matrix {
 
+    public static final Codec<double[]> CODEC_DATA = Codec.DOUBLE.listOf().xmap(
+            doubles -> doubles.stream().mapToDouble(Double::doubleValue).toArray(),
+            doubles -> Arrays.stream(doubles).boxed().toList()
+    );
+
+    public static final Codec<Matrix> CODEC = RecordCodecBuilder.create(
+            matrixInstance -> matrixInstance.group(
+                    Codec.INT.fieldOf("row").forGetter(Matrix::r),
+                    Codec.INT.fieldOf("col").forGetter(Matrix::c),
+                    CODEC_DATA.fieldOf("vals").forGetter(Matrix::getVals)
+            ).apply(matrixInstance, Matrix::new)
+    );
+
     int r, c;
     double[] vals;
 
     public Matrix(int r, int c) {
+        this(r,c,new double[r*c]);
+    }
+
+    private Matrix(int r, int c, double[] vals) {
         this.r = r;
         this.c = c;
         this.vals = new double[r*c];
@@ -175,4 +195,9 @@ public class Matrix {
         }
         return idx;
     }
+
+    public double[] getVals() {
+        return this.vals;
+    }
+
 }

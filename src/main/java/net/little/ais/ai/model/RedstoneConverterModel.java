@@ -55,4 +55,8 @@ public class RedstoneConverterModel {
         return totalLoss/EPOCHS;
     }
 
+    public List<Tensor> parameters() {
+        return this.model.getParams();
+    }
+
 }
