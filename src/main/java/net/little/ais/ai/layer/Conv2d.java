@@ -67,16 +67,6 @@ public class Conv2d implements Layer {
         return new Tensor(reshapedInput.transpose()).matmul(this.kernels).add(new Tensor(new StretchedMatrix(reshapedInput.c(), this.bias.MATRIX)));
     }
 
-    /*
-    C = Channels, F = Filter
-    input(W,H,C)
-    kernels = kernels(Wk, Hk, C, F) = (Wk*Wh*C, F)
-    // outH = (H - Hk) / stride + 1
-    // outW = (W - Wk) / stride + 1
-    input => (Wk*Hk*C, outW*outH).T => (outW*outH, Wk*Hk*C)
-    out = (outW*outH, F)
-    */
-
     @Override
     public List<Tensor> getParams() {
         return List.of(this.kernels, this.bias);

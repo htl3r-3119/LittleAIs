@@ -149,7 +149,6 @@ public class CanvasWidget extends AbstractWidget {
         int error = dx - dy;
 
         while (true) {
-            // System.out.println(x + " : " + x1 +  ", " + y + " : " + y1);
             if (x > maxX || x < 0) break;
             if (y > maxY || y < 0) break;
 

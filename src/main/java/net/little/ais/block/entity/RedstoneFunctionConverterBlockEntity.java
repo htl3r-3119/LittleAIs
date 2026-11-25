@@ -34,13 +34,6 @@ public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
     public RedstoneFunctionConverterBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(ModBlockEntities.REDSTONE_FUNCTION_CONVERTER_BLOCK_ENTITY_BLOCK_ENTITY_TYPE, worldPosition, blockState);
         this.MODEL = new RedstoneConverterModel();
-        /*
-        this.MODEL.dataSet.add(0,0,0,15);
-        this.MODEL.dataSet.add(0,0,15,0);
-        this.MODEL.dataSet.add(0,15,0,0);
-        this.MODEL.dataSet.add(15,0,0,0);
-        this.MODEL.dataSet.add(15,15,15,15);
-        */
     }
 
     public DataSet getData() {

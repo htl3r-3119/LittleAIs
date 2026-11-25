@@ -12,7 +12,7 @@
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "CC0-1.0",
-	"icon": "icon.png",
+	"icon": "assets/little_ais/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -23,11 +23,6 @@
 		]
 	},
 	"mixins": [
-		"little.ais.mixins.json",
-		{
-			"config": "little.ais.client.mixins.json",
-			"environment": "client"
-		}
 	],
 	"depends": {
 		"fabricloader": ">=0.20.1",

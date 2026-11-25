@@ -77,31 +77,6 @@ public class RedstoneFunctionConverterScreen extends Screen {
         addRenderableWidget(save);
         addRenderableWidget(add);
         addRenderableWidget(remove);
-        /*
-        int startX = 40;
-        int startY = 20;
-
-        for (Map.Entry<DataSet.Input, Integer> entry : this.entity.getData()) {
-            DataSet.Input key = entry.getKey();
-            int i = entry.getValue();
-            DataMapEntryWidget widget = new DataMapEntryWidget(startX, startY += 20, 120, 20, Component.literal("TEEST"), key.a(), key.b(), key.c(), i);
-            this.addRenderableWidget(widget);
-        }
-        for (Map.Entry<DataSet.Input, Integer> entry : this.entity.getData()) {
-            DataSet.Input key = entry.getKey();
-            int i = entry.getValue();
-            DataMapEntryWidget widget = new DataMapEntryWidget(startX, startY += 20, 120, 20, Component.literal("TEEST"), key.a(), key.b(), key.c(), i);
-            this.addRenderableWidget(widget);
-        }
-        for (Map.Entry<DataSet.Input, Integer> entry : this.entity.getData()) {
-            DataSet.Input key = entry.getKey();
-            int i = entry.getValue();
-            DataMapEntryWidget widget = new DataMapEntryWidget(startX, startY += 20, 120, 20, Component.literal("TEEST"), key.a(), key.b(), key.c(), i);
-            this.addRenderableWidget(widget);
-        }
-        // this.addRenderableWidget(new DataMapEntryWidget(startX, startY + 20, 120, 20, Component.literal("teeest"), 15,15,15,15));
-
-        */
     }
 
     @Override
