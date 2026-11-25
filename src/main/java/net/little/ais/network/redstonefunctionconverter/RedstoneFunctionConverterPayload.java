@@ -1,4 +1,4 @@
-package net.little.ais.network;
+package net.little.ais.network.redstonefunctionconverter;
 
 import net.little.ais.LittleAIs;
 import net.little.ais.ai.model.DataSet;

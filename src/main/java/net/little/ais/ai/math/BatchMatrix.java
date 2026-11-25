@@ -105,16 +105,21 @@ public class BatchMatrix extends Matrix {
         if (!this.fitForSimpleOp(other)) {
             throw new RuntimeException(String.format("The dimensions don't fit (%d, %d) | (%d, %d)", this.r, this.c, other.r, other.c));
         }
-        if (other instanceof BatchMatrix) {
-            for (int idx = 0; idx < this.vals.length; idx++) {
-                this.vals[idx] = func.apply(this.vals[idx], other.vals[idx]);
+        if (other instanceof BatchMatrix bm) {
+            for (int b = 0; b < this.b(); b++) {
+                for (int r = 0; r < this.r(); r++) {
+                    for (int c = 0; c < this.c(); c++) {
+                        this.set(b,r,c, func.apply(this.get(b,r,c), bm.get(b,r,c)));
+                    }
+                }
             }
             return this;
         }
-        for (int b = 0; b < this.b; b++) {
-            int off = b*this.r*this.c;
-            for (int idx = 0; idx < other.vals.length; idx++) {
-                this.vals[off+idx] = func.apply(this.vals[off+idx], other.vals[idx]);
+        for (int b = 0; b < this.b(); b++) {
+            for (int r = 0; r < this.r(); r++) {
+                for (int c = 0; c < this.c(); c++) {
+                    this.set(b,r,c, func.apply(this.get(b,r,c), other.get(r,c)));
+                }
             }
         }
         return this;
@@ -122,25 +127,27 @@ public class BatchMatrix extends Matrix {
 
     @Override
     public String toString() {
-        StringBuilder strB = new StringBuilder();
+        StringBuilder strB = new StringBuilder(String.format("(%dx%dx%d)", this.b(), this.r(), this.c()));
         strB.append("{\n");
-        for (int b = 0; b < this.b; b++) {
-            for (int r = 0; r < this.r; r++) {
-                strB.append('[');
-                for (int c = 0; c < this.c - 1; c++) {
+        for (int b = 0; b < this.b(); b++) {
+            strB.append(' ').append("{\n");
+            for (int r = 0; r < this.r(); r++) {
+                strB.append("  ").append('[');
+                for (int c = 0; c < this.c() - 1; c++) {
                     strB.append(this.get(b, r, c)).append(", ");
                 }
-                strB.append(this.get(b, r, this.c - 1)).append("]\n");
+                strB.append(this.get(b, r, this.c() - 1)).append("]\n");
             }
+            strB.append(' ').append("}\n");
         }
         strB.append("}");
         return strB.toString();
     }
 
     public BatchMatrix iterMatrixSelf(Function<Matrix, Matrix> iter) {
-        Matrix m = new Matrix(this.r, this.c);
-        for (int i = 0; i < this.b; i++) {
-            int idx = i * this.r * this.c;
+        Matrix m = new Matrix(this.r(), this.c());
+        for (int i = 0; i < this.b(); i++) {
+            int idx = i * this.r() * this.c();
             System.arraycopy(this.vals, idx, m.vals, 0, m.vals.length);
             Matrix out = iter.apply(m);
             System.arraycopy(out.vals, 0, this.vals, idx, out.vals.length);
@@ -149,11 +156,11 @@ public class BatchMatrix extends Matrix {
     }
 
     public Matrix sumPerBatch() {
-        BatchMatrix batchMatrix = new BatchMatrix(this.b, 1,1);
-        for (int i = 0; i < this.b; i++) {
-            int off = i*this.r*this.c;
+        BatchMatrix batchMatrix = new BatchMatrix(this.b(), 1,1);
+        for (int i = 0; i < this.b(); i++) {
+            int off = i*this.r()*this.c();
             double sum = 0;
-            for (int j = 0; j < this.r*this.c; j++) {
+            for (int j = 0; j < this.r()*this.c(); j++) {
                 sum+=this.vals[off+j];
             }
             batchMatrix.set(i,0,0,sum);
