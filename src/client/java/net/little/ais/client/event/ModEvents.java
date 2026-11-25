@@ -1,12 +1,16 @@
 package net.little.ais.client.event;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.little.ais.ai.model.StaticModel;
 import net.little.ais.block.ModBlocks;
 import net.little.ais.block.entity.RedstoneFunctionConverterBlockEntity;
 import net.little.ais.block.entity.RedstoneSecurityBlockEntity;
 import net.little.ais.client.gui.screen.RedstoneFunctionConverterScreen;
 import net.little.ais.client.gui.screen.RedstoneSecurityModuleScreen;
+import net.little.ais.network.redstonesecurity.RedstoneSecurityModulePredictionResultPayload;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
@@ -38,6 +42,16 @@ public class ModEvents {
             }
             return InteractionResult.PASS;
         });
+
+        ClientPlayNetworking.registerGlobalReceiver(
+                RedstoneSecurityModulePredictionResultPayload.TYPE,
+                (payload, context) -> {
+                    Screen screen = Minecraft.getInstance().gui.screen();
+                    if (screen instanceof RedstoneSecurityModuleScreen rsms) {
+                        rsms.showPrediction(payload.res());
+                    }
+                }
+        );
 
     }
 

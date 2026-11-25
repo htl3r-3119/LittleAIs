@@ -186,4 +186,8 @@ public class Matrix {
     public int size() {
         return this.vals.length;
     }
+
+    public double[] values() {
+        return this.vals;
+    }
 }

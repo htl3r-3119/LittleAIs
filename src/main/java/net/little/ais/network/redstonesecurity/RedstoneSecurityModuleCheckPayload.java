@@ -1,4 +1,4 @@
-package net.little.ais.network;
+package net.little.ais.network.redstonesecurity;
 
 import net.little.ais.LittleAIs;
 import net.minecraft.core.BlockPos;

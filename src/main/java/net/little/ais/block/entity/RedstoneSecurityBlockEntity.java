@@ -74,11 +74,12 @@ public class RedstoneSecurityBlockEntity extends BlockEntity {
     }
 
     public void setOwner(UUID uuid) {
+        if (this.level == null || this.level.isClientSide()) return;
         this.owner = uuid;
     }
 
     public boolean isOwnedBy(UUID owner) {
-        return this.owner.equals(owner);
+        return this.owner != null && this.owner.equals(owner);
     }
 
     public void validate(int pred) {

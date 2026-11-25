@@ -2,8 +2,6 @@ package net.little.ais.client.gui.widget;
 
 import net.little.ais.ai.math.BatchMatrix;
 import net.little.ais.ai.math.Matrix;
-import net.little.ais.ai.model.StaticModel;
-import net.little.ais.ai.tensor.Tensor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -176,9 +174,12 @@ public class CanvasWidget extends AbstractWidget {
         }
     }
 
-    public int pred() {
-        Matrix matrix = this.pixel.clone().iterateSelf(x -> x / 255.);
-        return StaticModel.REDSTONE_SECURITY_MODEL.predict(new Tensor(matrix));
+    public Matrix read() {
+        return this.pixel.clone().iterateSelf(x -> x / 255.);
+    }
+
+    public void reset() {
+        this.pixel.iterateSelf(_ -> 0.);
     }
 
 }

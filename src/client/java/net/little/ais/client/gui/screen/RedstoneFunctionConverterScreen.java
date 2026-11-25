@@ -3,7 +3,7 @@ package net.little.ais.client.gui.screen;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.little.ais.block.entity.RedstoneFunctionConverterBlockEntity;
 import net.little.ais.client.gui.widget.ScrollableListWidget;
-import net.little.ais.network.RedstoneFunctionConverterPayload;
+import net.little.ais.network.redstonefunctionconverter.RedstoneFunctionConverterPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;

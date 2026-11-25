@@ -1,33 +1,34 @@
 package net.little.ais.client.gui.screen;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.little.ais.ai.math.Matrix;
 import net.little.ais.block.entity.RedstoneSecurityBlockEntity;
 import net.little.ais.client.gui.widget.CanvasWidget;
-import net.little.ais.network.RedstoneSecurityModuleCheckPayload;
-import net.little.ais.network.RedstoneSecurityModulePayload;
+import net.little.ais.network.redstonesecurity.RedstoneSecurityModulePayload;
+import net.little.ais.network.redstonesecurity.RedstoneSecurityModulePredictionPayload;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.FittingMultiLineTextWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class RedstoneSecurityModuleScreen extends Screen {
 
-    RedstoneSecurityBlockEntity en;
+    BlockPos pos;
     UUID owner;
+    boolean isOwner;
     FittingMultiLineTextWidget prediction;
     FittingMultiLineTextWidget test;
     CanvasWidget canvas;
 
-    public RedstoneSecurityModuleScreen(Component title, RedstoneSecurityBlockEntity entity, UUID owner) {
+    public RedstoneSecurityModuleScreen(Component title, RedstoneSecurityBlockEntity entity, UUID player) {
         super(title);
-        this.en = entity;
-        this.owner = owner;
+        this.pos = entity.getBlockPos();
+        this.owner = entity.getOwner();
+        this.isOwner = entity.isOwnedBy(player);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class RedstoneSecurityModuleScreen extends Screen {
         int S = Math.min(W,H);
 
         int x = this.width/2-S/2;
-        int y = this.height/2-S/2;
+        int y = this.height/2-S/2-20;
 
         this.canvas = new CanvasWidget(x, y, S, S, Component.literal("canvas"));
         this.addRenderableWidget(this.canvas);
@@ -47,8 +48,8 @@ public class RedstoneSecurityModuleScreen extends Screen {
         int startX = this.canvas.getX();
         int startY = this.canvas.getY()+this.canvas.getHeight();
 
-        // Tool Test    Prediction
-        // Send Config  /
+        // Tool     Test    Prediction
+        // Reset    Send    Config
 
         int topWidgetWidth = S/3;
         int topWidgetHeight = 20;
@@ -59,8 +60,12 @@ public class RedstoneSecurityModuleScreen extends Screen {
         ).build();
 
         Button test = Button.builder(Component.literal("test"), _ -> {
-            int pred = this.canvas.pred();
-            this.prediction.setMessage(Component.literal(String.valueOf(pred)));
+            Matrix read = this.canvas.read();
+            ClientPlayNetworking.send(new RedstoneSecurityModulePredictionPayload(
+                    this.pos,
+                    read.values(),
+                    true
+            ));
         }).bounds(
                 startX+topWidgetWidth,startY,
                 topWidgetWidth,topWidgetHeight
@@ -76,23 +81,31 @@ public class RedstoneSecurityModuleScreen extends Screen {
 
         startY+=topWidgetHeight;
 
-        int bottomWidgetWidth = S/2;
+        int bottomWidgetWidth = S/3;
         int bottomWidgetHeight = 20;
+
+        Button resetButton = Button.builder(
+                Component.literal("reset"),
+                _ -> this.canvas.reset()
+        ).bounds(startX,startY,bottomWidgetWidth,bottomWidgetHeight).build();
 
         Button sendButton = Button.builder(
                 Component.literal("send"),
                 this::send
-        ).bounds(startX,startY,bottomWidgetWidth,bottomWidgetHeight).build();
-
-        Button config = Button.builder(
-                Component.literal("config"),
-                this::config
         ).bounds(startX+bottomWidgetWidth,startY,bottomWidgetWidth,bottomWidgetHeight).build();
 
+        if (this.isOwner) {
+            Button config = Button.builder(
+                    Component.literal("config"),
+                    this::config
+            ).bounds(startX + 2 * bottomWidgetWidth, startY, bottomWidgetWidth, bottomWidgetHeight).build();
+            this.addRenderableWidget(config);
+        }
+
+        this.addRenderableWidget(resetButton);
         this.addRenderableWidget(test);
         this.addRenderableWidget(tool);
         this.addRenderableWidget(sendButton);
-        this.addRenderableWidget(config);
         this.addRenderableWidget(this.prediction);
     }
 
@@ -102,17 +115,16 @@ public class RedstoneSecurityModuleScreen extends Screen {
             b.setMessage(Component.literal("eraser"));
         }
         else b.setMessage(Component.literal("brush"));
-        System.out.println(b.getMessage());
         this.canvas.color = this.canvas.color == 255 ? -255 : 255;
     }
 
     private void send(Button button) {
-        int pred = this.canvas.pred();
-        this.prediction.setMessage(Component.literal(String.valueOf(pred)));
+        Matrix read = this.canvas.read();
         ClientPlayNetworking.send(
-                new RedstoneSecurityModuleCheckPayload(
-                        this.en.getBlockPos(),
-                        pred
+                new RedstoneSecurityModulePredictionPayload(
+                        this.pos,
+                        read.values(),
+                        false
                 )
         );
     }
@@ -120,11 +132,15 @@ public class RedstoneSecurityModuleScreen extends Screen {
     private void config(Button button) {
         ClientPlayNetworking.send(
                 new RedstoneSecurityModulePayload(
-                        this.en.getBlockPos(),
-                        this.en.getOwner().toString(),
-                        this.canvas.pred()
+                        this.pos,
+                        this.owner.toString(),
+                        this.canvas.read().values()
                 )
         );
+    }
+
+    public void showPrediction(int res) {
+        this.prediction.setMessage(Component.literal(String.valueOf(res)));
     }
 
 }
