@@ -7,12 +7,16 @@ import net.little.ais.client.gui.widget.CanvasWidget;
 import net.little.ais.network.redstonesecurity.RedstoneSecurityModulePayload;
 import net.little.ais.network.redstonesecurity.RedstoneSecurityModulePredictionPayload;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.FittingMultiLineTextWidget;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
+import java.awt.*;
 import java.util.UUID;
 
 public class RedstoneSecurityModuleScreen extends Screen {
@@ -23,6 +27,8 @@ public class RedstoneSecurityModuleScreen extends Screen {
     FittingMultiLineTextWidget prediction;
     FittingMultiLineTextWidget test;
     CanvasWidget canvas;
+
+    private static final int TEXT_COLOR = Color.WHITE.getRGB();
 
     public RedstoneSecurityModuleScreen(Component title, RedstoneSecurityBlockEntity entity, UUID player) {
         super(title);
@@ -57,7 +63,7 @@ public class RedstoneSecurityModuleScreen extends Screen {
         Button tool = Button.builder(Component.literal("eraser"), this::switchTool).bounds(
                 startX,startY,
                 topWidgetWidth,topWidgetHeight
-        ).build();
+        ).tooltip(Tooltip.create(Component.literal("Change Tool"))).build();
 
         Button test = Button.builder(Component.literal("test"), _ -> {
             Matrix read = this.canvas.read();
@@ -69,6 +75,8 @@ public class RedstoneSecurityModuleScreen extends Screen {
         }).bounds(
                 startX+topWidgetWidth,startY,
                 topWidgetWidth,topWidgetHeight
+        ).tooltip(
+               Tooltip.create(Component.literal("Sending drawing to check what digit is recognized"))
         ).build();
 
         this.prediction = new FittingMultiLineTextWidget(
@@ -77,6 +85,7 @@ public class RedstoneSecurityModuleScreen extends Screen {
                 Component.literal(""),
                 Minecraft.getInstance().font
         );
+        this.prediction.setTooltip(Tooltip.create(Component.literal("The number last recognized by your drawings")));
         this.prediction.setSize(topWidgetWidth,topWidgetHeight);
 
         startY+=topWidgetHeight;
@@ -87,17 +96,23 @@ public class RedstoneSecurityModuleScreen extends Screen {
         Button resetButton = Button.builder(
                 Component.literal("reset"),
                 _ -> this.canvas.reset()
+        ).tooltip(
+                Tooltip.create(Component.literal("Reset Canvas"))
         ).bounds(startX,startY,bottomWidgetWidth,bottomWidgetHeight).build();
 
         Button sendButton = Button.builder(
                 Component.literal("send"),
                 this::send
+        ).tooltip(
+                Tooltip.create(Component.literal("Sending drawing for verification"))
         ).bounds(startX+bottomWidgetWidth,startY,bottomWidgetWidth,bottomWidgetHeight).build();
 
         if (this.isOwner) {
             Button config = Button.builder(
                     Component.literal("config"),
                     this::config
+            ).tooltip(
+                    Tooltip.create(Component.literal("Sending drawing to change the digit required for verification"))
             ).bounds(startX + 2 * bottomWidgetWidth, startY, bottomWidgetWidth, bottomWidgetHeight).build();
             this.addRenderableWidget(config);
         }
@@ -109,13 +124,25 @@ public class RedstoneSecurityModuleScreen extends Screen {
         this.addRenderableWidget(this.prediction);
     }
 
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        Component head = Component.literal("Security Module").withStyle(
+                style -> style.withBold(true).withUnderlined(true)
+        );
+        graphics.text(this.font, head, this.width/2-this.font.width(head)/2, this.canvas.getY()-this.font.lineHeight-2, TEXT_COLOR);
+        super.extractRenderState(graphics, mouseX, mouseY, a);
+    }
+
     private void switchTool(Button b) {
         Component message = b.getMessage();
         if (message.toString().contains("brush")) {
             b.setMessage(Component.literal("eraser"));
+            this.canvas.color = 255;
         }
-        else b.setMessage(Component.literal("brush"));
-        this.canvas.color = this.canvas.color == 255 ? -255 : 255;
+        else {
+            b.setMessage(Component.literal("brush"));
+            this.canvas.color = -255;
+        }
     }
 
     private void send(Button button) {

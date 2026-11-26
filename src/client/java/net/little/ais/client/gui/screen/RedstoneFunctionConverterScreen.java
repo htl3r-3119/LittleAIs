@@ -11,8 +11,11 @@ import net.minecraft.client.gui.components.FittingMultiLineTextWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import java.awt.*;
+
 public class RedstoneFunctionConverterScreen extends Screen {
 
+    private static final int TEXT_COLOR = Color.WHITE.getRGB();
     RedstoneFunctionConverterBlockEntity entity;
 
     public RedstoneFunctionConverterScreen(Component title, RedstoneFunctionConverterBlockEntity eR) {
@@ -81,6 +84,10 @@ public class RedstoneFunctionConverterScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        Component head = Component.literal("Signal Converter").withStyle(
+                style -> style.withBold(true).withUnderlined(true)
+        );
+        graphics.text(this.font, head, this.width/2-this.font.width(head)/2, (int) (this.height/2.-this.height*0.4)-this.font.lineHeight-2, TEXT_COLOR);
         super.extractRenderState(graphics, mouseX, mouseY, a);
     }
 
