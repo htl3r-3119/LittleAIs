@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "I": "minecraft:iron_ingot",
+    "O": "minecraft:observer",
+    "P": "minecraft:paper"
+  },
+  "pattern": [
+    "IPI",
+    "IOI",
+    "ICI"
+  ],
+  "result": {
+    "id": "little_ais:redstone_security_module"
+  }
+}
