@@ -6,7 +6,6 @@ import net.little.ais.ai.model.StaticModel;
 import net.little.ais.block.ModBlocks;
 import net.little.ais.block.entity.ModBlockEntities;
 import net.little.ais.itemgroups.ModItemGroups;
-import net.little.ais.items.ModItems;
 import net.little.ais.network.ModPayloads;
 import net.minecraft.resources.Identifier;
 
@@ -29,7 +28,6 @@ public class LittleAIs implements ModInitializer {
 
 		LOGGER.info("Initializing LittleAIs");
 
-		ModItems.initialize();
 		ModItemGroups.initialize();
 		StaticModel.initialize();
 		ModBlocks.initialize();
