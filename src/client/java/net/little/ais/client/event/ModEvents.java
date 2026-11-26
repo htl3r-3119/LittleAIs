@@ -4,6 +4,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.little.ais.ai.model.StaticModel;
 import net.little.ais.block.ModBlocks;
+import net.little.ais.block.RedstoneFunctionConverterBlock;
+import net.little.ais.block.RedstoneSecurityModuleBlock;
 import net.little.ais.block.entity.RedstoneFunctionConverterBlockEntity;
 import net.little.ais.block.entity.RedstoneSecurityBlockEntity;
 import net.little.ais.client.gui.screen.RedstoneFunctionConverterScreen;
@@ -11,6 +13,7 @@ import net.little.ais.client.gui.screen.RedstoneSecurityModuleScreen;
 import net.little.ais.network.redstonesecurity.RedstoneSecurityModulePredictionResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +34,9 @@ public class ModEvents {
                 return InteractionResult.SUCCESS;
             }
             else if (blockState.is(ModBlocks.REDSTONE_SECURITY_MODULE_BLOCK)) {
-                if (!itemInHand.isEmpty()) return InteractionResult.PASS;
+                Direction direction = hitResult.getDirection();
+                Direction value = blockState.getValue(RedstoneSecurityModuleBlock.FACING);
+                if (!itemInHand.isEmpty() || direction != value) return InteractionResult.PASS;
                 Minecraft.getInstance().gui.setScreen(
                         new RedstoneSecurityModuleScreen(
                                 Component.empty(),

@@ -34,6 +34,7 @@ public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
     public RedstoneFunctionConverterBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(ModBlockEntities.REDSTONE_FUNCTION_CONVERTER_BLOCK_ENTITY_BLOCK_ENTITY_TYPE, worldPosition, blockState);
         this.MODEL = new RedstoneConverterModel();
+        this.MODEL.dataSet.add(0,0,0,0);
     }
 
     public DataSet getData() {
@@ -107,7 +108,10 @@ public class RedstoneFunctionConverterBlockEntity extends BlockEntity {
     }
 
     private void loadDataSet(ValueInput input) {
-        input.read("dataset", DataSet.CODEC).ifPresent(this.MODEL.dataSet::fill);
+        input.read("dataset", DataSet.CODEC).ifPresent(entries -> {
+            this.MODEL.dataSet.clear();
+            this.MODEL.dataSet.fill(entries);
+        });
     }
 
     private void loadMatrix(String name, Matrix m, ValueInput input) {
